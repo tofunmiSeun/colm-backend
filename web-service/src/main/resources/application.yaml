@@ -1,0 +1,9 @@
+server:
+  port: 1650
+
+spring:
+  data:
+    mongodb:
+      uri: ${DB_URI}
+
+google-client-id: ${GOOGLE_CLIENT_ID}
