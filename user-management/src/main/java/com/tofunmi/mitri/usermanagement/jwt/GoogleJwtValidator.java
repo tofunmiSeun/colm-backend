@@ -26,8 +26,9 @@ public class GoogleJwtValidator {
 
             GoogleIdToken.Payload payload = googleIdToken.getPayload();
             String email = payload.getEmail();
-            String name = (String) payload.get("name");
-            return new ValidatedJwtTokenDetails(email, name);
+            String fullName = (String) payload.get("name");
+            String firstName = (String) payload.get("given_name");
+            return new ValidatedJwtTokenDetails(email, fullName, firstName);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
