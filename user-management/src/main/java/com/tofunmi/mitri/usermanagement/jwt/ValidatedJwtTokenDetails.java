@@ -11,4 +11,5 @@ import lombok.Data;
 public class ValidatedJwtTokenDetails {
     private String email;
     private String fullName;
+    private String firstName;
 }

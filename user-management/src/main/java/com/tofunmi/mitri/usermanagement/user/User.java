@@ -16,10 +16,12 @@ public class User {
     @Id
     private String id;
     private String email;
-    private String name;
+    private String fullName;
+    private String firstName;
 
-    public User(String email, String name) {
+    public User(String email, String fullName, String firstName) {
         this.email = email;
-        this.name = name;
+        this.fullName = fullName;
+        this.firstName = firstName;
     }
 }

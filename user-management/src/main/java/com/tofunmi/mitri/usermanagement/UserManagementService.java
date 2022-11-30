@@ -37,11 +37,11 @@ public class UserManagementService {
         if (isExistingUser) {
             user = userRepository.findByEmail(tokenDetails.getEmail());
         } else {
-            user = new User(tokenDetails.getEmail(), tokenDetails.getFullName());
+            user = new User(tokenDetails.getEmail(), tokenDetails.getFullName(), tokenDetails.getFirstName());
             user = userRepository.save(user);
         }
 
         List<ProfileOverview> userProfiles = isExistingUser ? profileService.findForUser(user.getId()) : new ArrayList<>();
-        return new UserSetupResponse(user.getId(), user.getEmail(), user.getName(), isExistingUser, userProfiles);
+        return new UserSetupResponse(user.getId(), user.getEmail(), user.getFirstName(), isExistingUser, userProfiles);
     }
 }
