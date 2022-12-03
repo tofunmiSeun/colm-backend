@@ -4,6 +4,7 @@ import com.tofunmi.mitri.usermanagement.profile.ProfileOverview;
 import com.tofunmi.mitri.usermanagement.profile.ProfileService;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import java.time.Instant;
 import java.util.List;
@@ -26,6 +27,7 @@ public class PostService {
     }
 
     public void createPost(String content, String profileId) {
+        Assert.hasText(content, "Content cannot be empty");
         Post post = new Post();
         post.setContent(content);
         post.setAuthor(profileId);
