@@ -1,5 +1,6 @@
 package com.tofunmi.mitri.webservice.post;
 
+import com.tofunmi.mitri.usermanagement.profile.ProfileService;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -12,18 +13,37 @@ import java.util.List;
 @RequestMapping("post")
 public class PostController {
     private final PostService postService;
+    private final PostReactionService postReactionService;
+    private final ProfileService profileService;
 
-    public PostController(PostService postService) {
+    public PostController(PostService postService, PostReactionService postReactionService,
+                          ProfileService profileService) {
         this.postService = postService;
+        this.postReactionService = postReactionService;
+        this.profileService = profileService;
     }
 
     @PostMapping
-    public void newPost(@RequestBody CreatePostRequest request, Principal principal) {
-        postService.createPost(request.getContent(), principal.getName());
+    public void newPost(@RequestParam String profileId, @RequestBody CreatePostRequest request, Principal principal) {
+        profileService.validateProfileBelongsToUser(profileId, principal.getName());
+        postService.createPost(request.getContent(), profileId);
     }
 
     @GetMapping
-    public List<Post> getAllPosts(Principal principal) {
-        return postService.getForUser(principal.getName());
+    public List<PostViewModel> getAllPosts(@RequestParam String profileId, Principal principal) {
+        profileService.validateProfileBelongsToUser(profileId, principal.getName());
+        return postService.getForProfile(profileId);
+    }
+
+    @PostMapping("{id}/like")
+    public void likePost(@PathVariable String id, @RequestParam String profileId, Principal principal) {
+        profileService.validateProfileBelongsToUser(profileId, principal.getName());
+        postReactionService.react(id, profileId, Reaction.LIKE);
+    }
+
+    @PostMapping("{id}/like/remove")
+    public void removeLike(@PathVariable String id, @RequestParam String profileId, Principal principal) {
+        profileService.validateProfileBelongsToUser(profileId, principal.getName());
+        postReactionService.removeReaction(id, profileId, Reaction.LIKE);
     }
 }

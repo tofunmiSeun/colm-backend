@@ -1,6 +1,5 @@
 package com.tofunmi.mitri.webservice.auth;
 
-import com.tofunmi.mitri.usermanagement.profile.ProfileService;
 import com.tofunmi.mitri.usermanagement.sessiontoken.UserSessionService;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -23,11 +22,9 @@ import java.util.Collections;
 @Component
 public class CustomSessionTokenFilter extends HttpFilter {
     private final UserSessionService userSessionService;
-    private final ProfileService profileService;
 
-    public CustomSessionTokenFilter(UserSessionService userSessionService, ProfileService profileService) {
+    public CustomSessionTokenFilter(UserSessionService userSessionService) {
         this.userSessionService = userSessionService;
-        this.profileService = profileService;
     }
 
     protected void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
