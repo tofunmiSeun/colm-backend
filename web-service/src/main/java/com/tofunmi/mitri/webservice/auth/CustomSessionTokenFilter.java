@@ -1,5 +1,6 @@
 package com.tofunmi.mitri.webservice.auth;
 
+import com.tofunmi.mitri.usermanagement.profile.ProfileService;
 import com.tofunmi.mitri.usermanagement.sessiontoken.UserSessionService;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -22,9 +23,11 @@ import java.util.Collections;
 @Component
 public class CustomSessionTokenFilter extends HttpFilter {
     private final UserSessionService userSessionService;
+    private final ProfileService profileService;
 
-    public CustomSessionTokenFilter(UserSessionService userSessionService) {
+    public CustomSessionTokenFilter(UserSessionService userSessionService, ProfileService profileService) {
         this.userSessionService = userSessionService;
+        this.profileService = profileService;
     }
 
     protected void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -33,6 +36,12 @@ public class CustomSessionTokenFilter extends HttpFilter {
             if (StringUtils.hasText(sessionId)) {
                 String userId = userSessionService.getUserId(sessionId);
                 if (StringUtils.hasText(userId)) {
+
+                    String profileId = request.getParameter("profileId");
+                    if (StringUtils.hasText(profileId)) {
+                        profileService.validateProfileBelongsToUser(profileId, userId);
+                    }
+
                     Authentication auth = UsernamePasswordAuthenticationToken.authenticated(userId, null, Collections.emptyList());
                     SecurityContextHolder.getContext().setAuthentication(auth);
                 }
