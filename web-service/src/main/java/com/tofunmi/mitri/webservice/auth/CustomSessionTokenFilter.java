@@ -36,12 +36,6 @@ public class CustomSessionTokenFilter extends HttpFilter {
             if (StringUtils.hasText(sessionId)) {
                 String userId = userSessionService.getUserId(sessionId);
                 if (StringUtils.hasText(userId)) {
-
-                    String profileId = request.getParameter("profileId");
-                    if (StringUtils.hasText(profileId)) {
-                        profileService.validateProfileBelongsToUser(profileId, userId);
-                    }
-
                     Authentication auth = UsernamePasswordAuthenticationToken.authenticated(userId, null, Collections.emptyList());
                     SecurityContextHolder.getContext().setAuthentication(auth);
                 }
