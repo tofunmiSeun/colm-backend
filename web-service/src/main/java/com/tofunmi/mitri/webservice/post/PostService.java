@@ -8,6 +8,7 @@ import org.springframework.util.Assert;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -39,12 +40,16 @@ public class PostService {
         Sort sort = Sort.by("createdOn").descending();
         List<Post> posts = repository.findAll(sort);
 
-        ProfileOverview profileOverview = profileService.getProfile(profileId);
+        Set<String> uniqueProfileIds = posts.stream().map(Post::getAuthor).collect(Collectors.toSet());
+        Map<String, ProfileOverview> profileOverviewMapping = profileService.getProfiles(uniqueProfileIds).stream()
+                .collect(Collectors.toMap(ProfileOverview::getId, item -> item));
+
         Set<String> postsLikedByProfile = postReactionService.getIdsForLikedPosts(profileId);
 
         return posts.stream().map(e -> new PostViewModel(e.getId(),
-                        e.getContent(), profileOverview.getUsername(),
-                        profileOverview.getName(), postsLikedByProfile.contains(e.getId())))
+                        e.getContent(), profileOverviewMapping.get(e.getAuthor()).getUsername(),
+                        profileOverviewMapping.get(e.getAuthor()).getName(),
+                        postsLikedByProfile.contains(e.getId())))
                 .collect(Collectors.toList());
     }
 }

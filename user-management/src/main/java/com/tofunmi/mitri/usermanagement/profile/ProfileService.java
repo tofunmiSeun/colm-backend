@@ -3,8 +3,10 @@ package com.tofunmi.mitri.usermanagement.profile;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -30,6 +32,12 @@ public class ProfileService {
     public ProfileOverview getProfile(String id) {
         Profile profile = repository.findById(id).orElseThrow();
         return mapToOverview(profile);
+    }
+
+    public List<ProfileOverview> getProfiles(Set<String> ids) {
+        List<ProfileOverview> overviews = new ArrayList<>();
+        repository.findAllById(ids).forEach(p -> overviews.add(mapToOverview(p)));
+        return overviews;
     }
 
     public List<ProfileOverview> findForUser(String userId) {
