@@ -5,6 +5,7 @@ import com.tofunmi.mitri.usermanagement.profile.ProfileService;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 import java.time.Instant;
 import java.util.List;
@@ -27,18 +28,28 @@ public class PostService {
         this.postReactionService = postReactionService;
     }
 
-    public void createPost(String content, String profileId) {
+    public void createPost(CreatePostRequest createPostRequest, String profileId) {
+        final String content = createPostRequest.getContent();
         Assert.hasText(content, "Content cannot be empty");
+
         Post post = new Post();
         post.setContent(content);
         post.setAuthor(profileId);
         post.setCreatedOn(Instant.now());
+
+        final String parentPostId = createPostRequest.getParentPostId();
+        if (StringUtils.hasText(parentPostId)) {
+            post.setParentPostId(parentPostId);
+        }
+
         repository.save(post);
     }
 
     public List<PostViewModel> getForProfile(String profileId) {
         Sort sort = Sort.by("createdOn").descending();
-        List<Post> posts = repository.findAll(sort);
+        List<Post> posts = repository.findAll(sort).stream()
+                .filter(e -> !StringUtils.hasText(e.getParentPostId()))
+                .collect(Collectors.toList());
 
         Set<String> uniqueProfileIds = posts.stream().map(Post::getAuthor).collect(Collectors.toSet());
         Map<String, ProfileOverview> profileOverviewMapping = profileService.getProfiles(uniqueProfileIds).stream()

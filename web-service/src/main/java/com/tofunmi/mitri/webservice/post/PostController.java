@@ -26,7 +26,7 @@ public class PostController {
     @PostMapping
     public void newPost(@RequestParam String profileId, @RequestBody CreatePostRequest request, Principal principal) {
         profileService.validateProfileBelongsToUser(profileId, principal.getName());
-        postService.createPost(request.getContent(), profileId);
+        postService.createPost(request, profileId);
     }
 
     @GetMapping

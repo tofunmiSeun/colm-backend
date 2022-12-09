@@ -17,6 +17,7 @@ public class Post {
     private String id;
     private String content;
     private String author;
+    private String parentPostId;
     @CreatedDate
     private Instant createdOn;
 }
