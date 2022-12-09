@@ -22,6 +22,8 @@ public class PostService {
     private final ProfileService profileService;
     private final PostReactionService postReactionService;
 
+    private final Sort sort = Sort.by("createdOn").descending();
+
     public PostService(PostRepository repository, ProfileService profileService, PostReactionService postReactionService) {
         this.repository = repository;
         this.profileService = profileService;
@@ -55,11 +57,19 @@ public class PostService {
     }
 
     public List<PostViewModel> getForProfile(String profileId) {
-        Sort sort = Sort.by("createdOn").descending();
         List<Post> posts = repository.findAll(sort).stream()
                 .filter(e -> !StringUtils.hasText(e.getParentPostId()))
                 .collect(Collectors.toList());
 
+        return hydratePosts(posts, profileId);
+    }
+
+    public List<PostViewModel> getReplies(String id, String profileId) {
+        List<Post> repliesToPost = repository.findAllByParentPostId(id, sort);
+        return hydratePosts(repliesToPost, profileId);
+    }
+
+    public List<PostViewModel> hydratePosts(List<Post> posts, String profileId) {
         Set<String> uniqueProfileIds = posts.stream().map(Post::getAuthor).collect(Collectors.toSet());
         Map<String, ProfileOverview> profileOverviewMapping = profileService.getProfiles(uniqueProfileIds).stream()
                 .collect(Collectors.toMap(ProfileOverview::getId, item -> item));

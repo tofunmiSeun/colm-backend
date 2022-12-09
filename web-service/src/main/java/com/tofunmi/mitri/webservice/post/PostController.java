@@ -53,4 +53,10 @@ public class PostController {
         profileService.validateProfileBelongsToUser(profileId, principal.getName());
         postService.replyToPost(originalPostId, request, profileId);
     }
+
+    @GetMapping("{id}/replies")
+    public List<PostViewModel> getReplies(@RequestParam String profileId, @PathVariable("id") String id, Principal principal) {
+        profileService.validateProfileBelongsToUser(profileId, principal.getName());
+        return postService.getReplies(id, profileId);
+    }
 }
