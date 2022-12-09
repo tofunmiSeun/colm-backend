@@ -29,6 +29,20 @@ public class PostService {
     }
 
     public void createPost(CreatePostRequest createPostRequest, String profileId) {
+        repository.save(newPost(createPostRequest, profileId));
+    }
+
+    public void replyToPost(String originalPostId, CreatePostRequest createPostRequest, String profileId) {
+        Assert.hasText(originalPostId, "Invalid post id to reply");
+        Assert.isTrue(repository.existsById(originalPostId), String.format("No post with id %s", originalPostId));
+
+        Post post = newPost(createPostRequest, profileId);
+        post.setParentPostId(originalPostId);
+
+        repository.save(post);
+    }
+
+    private Post newPost(CreatePostRequest createPostRequest, String profileId) {
         final String content = createPostRequest.getContent();
         Assert.hasText(content, "Content cannot be empty");
 
@@ -37,12 +51,7 @@ public class PostService {
         post.setAuthor(profileId);
         post.setCreatedOn(Instant.now());
 
-        final String parentPostId = createPostRequest.getParentPostId();
-        if (StringUtils.hasText(parentPostId)) {
-            post.setParentPostId(parentPostId);
-        }
-
-        repository.save(post);
+        return post;
     }
 
     public List<PostViewModel> getForProfile(String profileId) {

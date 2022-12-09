@@ -46,4 +46,11 @@ public class PostController {
         profileService.validateProfileBelongsToUser(profileId, principal.getName());
         postReactionService.removeReaction(id, profileId, Reaction.LIKE);
     }
+
+    @PostMapping("{id}/reply")
+    public void replyPost(@RequestParam String profileId, @PathVariable("id") String originalPostId,
+                          @RequestBody CreatePostRequest request, Principal principal) {
+        profileService.validateProfileBelongsToUser(profileId, principal.getName());
+        postService.replyToPost(originalPostId, request, profileId);
+    }
 }
