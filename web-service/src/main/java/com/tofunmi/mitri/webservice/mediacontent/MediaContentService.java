@@ -50,4 +50,8 @@ public class MediaContentService {
         int lastIndexOf = originalFileName.lastIndexOf(".");
         return Optional.of(originalFileName.substring(lastIndexOf));
     }
+
+    public byte[] getForId(String id) {
+        return repository.findById(id).orElseThrow().getContent();
+    }
 }
