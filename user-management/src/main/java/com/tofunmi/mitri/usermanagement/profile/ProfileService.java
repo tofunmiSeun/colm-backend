@@ -61,4 +61,8 @@ public class ProfileService {
         Profile profile = repository.findById(id).orElseThrow();
         Assert.isTrue(Objects.equals(userId, profile.getUserId()), String.format("Profile %s does not belong to user %s", id, userId));
     }
+
+    public boolean exists(String id) {
+        return repository.existsById(id);
+    }
 }
