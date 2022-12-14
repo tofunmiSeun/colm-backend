@@ -36,16 +36,41 @@ public class PostService {
         this.mediaContentService = mediaContentService;
     }
 
-    public void createPost(CreatePostRequest createPostRequest, String profileId) {
-        Assert.hasText(createPostRequest.getContent(), "Content cannot be empty");
-        repository.save(newPost(createPostRequest.getContent(), profileId));
-    }
-
     public void createPost(String profileId, String textContent, MultipartFile[] mediaContents) {
         boolean postContainsContent = (mediaContents != null && mediaContents.length > 0) ||
                 StringUtils.hasText(textContent);
         Assert.isTrue(postContainsContent, "At least some text or one media content is required");
 
+        Post post = newPost(textContent, profileId, mediaContents);
+        repository.save(post);
+    }
+
+    public void replyToPost(String originalPostId, String profileId, String textContent, MultipartFile[] mediaContents) {
+        Assert.hasText(originalPostId, "Invalid post id to reply");
+        Assert.isTrue(repository.existsById(originalPostId), String.format("No post with id %s", originalPostId));
+        boolean postContainsContent = (mediaContents != null && mediaContents.length > 0) ||
+                StringUtils.hasText(textContent);
+        Assert.isTrue(postContainsContent, "At least some text or one media content is required");
+
+        Post post = newPost(textContent, profileId, mediaContents);
+        post.setParentPostId(originalPostId);
+
+        repository.save(post);
+    }
+
+    private Post newPost(String content, String profileId, MultipartFile[] mediaContents) {
+        Assert.isTrue(profileService.exists(profileId), String.format("Profile with id %s does not exist", profileId));
+
+        Post post = new Post();
+        post.setContent(content);
+        post.setAuthor(profileId);
+        post.setCreatedOn(Instant.now());
+        post.setMediaContents(saveMediaContents(mediaContents));
+
+        return post;
+    }
+
+    private List<SavedMediaContent> saveMediaContents(MultipartFile[] mediaContents) {
         List<SavedMediaContent> savedMediaContents = new ArrayList<>();
         if (mediaContents != null) {
             for (MultipartFile fileContent : mediaContents) {
@@ -56,32 +81,7 @@ public class PostService {
                 }
             }
         }
-
-        Post post = newPost(textContent, profileId);
-        post.setMediaContents(savedMediaContents);
-        repository.save(post);
-    }
-
-    public void replyToPost(String originalPostId, CreatePostRequest createPostRequest, String profileId) {
-        Assert.hasText(originalPostId, "Invalid post id to reply");
-        Assert.isTrue(repository.existsById(originalPostId), String.format("No post with id %s", originalPostId));
-        Assert.hasText(createPostRequest.getContent(), "Content cannot be empty");
-
-        Post post = newPost(createPostRequest.getContent(), profileId);
-        post.setParentPostId(originalPostId);
-
-        repository.save(post);
-    }
-
-    private Post newPost(String content, String profileId) {
-        Assert.isTrue(profileService.exists(profileId), String.format("Profile with id %s does not exist", profileId));
-
-        Post post = new Post();
-        post.setContent(content);
-        post.setAuthor(profileId);
-        post.setCreatedOn(Instant.now());
-
-        return post;
+        return savedMediaContents;
     }
 
     public List<PostViewModel> getForProfile(String profileId) {

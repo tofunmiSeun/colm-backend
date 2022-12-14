@@ -24,12 +24,6 @@ public class PostController {
         this.profileService = profileService;
     }
 
-    @PostMapping
-    public void newPost(@RequestParam String profileId, @RequestBody CreatePostRequest request, Principal principal) {
-        profileService.validateProfileBelongsToUser(profileId, principal.getName());
-        postService.createPost(request, profileId);
-    }
-
     @PostMapping(value = "create", consumes = "multipart/form-data")
     public void createPost(@RequestParam String profileId, Principal principal,
                            @RequestParam(value = "files", required = false) MultipartFile[] files,
@@ -56,11 +50,13 @@ public class PostController {
         postReactionService.removeReaction(id, profileId, Reaction.LIKE);
     }
 
-    @PostMapping("{id}/reply")
+    @PostMapping(value = "{id}/reply", consumes = "multipart/form-data")
     public void replyPost(@RequestParam String profileId, @PathVariable("id") String originalPostId,
-                          @RequestBody CreatePostRequest request, Principal principal) {
+                          Principal principal,
+                          @RequestParam(value = "files", required = false) MultipartFile[] files,
+                          @RequestParam(value = "text", required = false) String text) {
         profileService.validateProfileBelongsToUser(profileId, principal.getName());
-        postService.replyToPost(originalPostId, request, profileId);
+        postService.replyToPost(originalPostId, profileId, text, files);
     }
 
     @GetMapping("{id}/replies")
