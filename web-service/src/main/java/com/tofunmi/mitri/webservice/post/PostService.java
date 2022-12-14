@@ -65,7 +65,11 @@ public class PostService {
         post.setContent(content);
         post.setAuthor(profileId);
         post.setCreatedOn(Instant.now());
-        post.setMediaContents(saveMediaContents(mediaContents));
+
+        List<SavedMediaContent> savedMediaContents = saveMediaContents(mediaContents);
+        if (savedMediaContents.size() > 0) {
+            post.setMediaContents(saveMediaContents(mediaContents));
+        }
 
         return post;
     }
