@@ -1,6 +1,6 @@
 package com.tofunmi.mitri.usermanagement;
 
-import com.tofunmi.mitri.usermanagement.profile.ProfileOverview;
+import com.tofunmi.mitri.usermanagement.profile.ProfileViewModel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,5 +18,5 @@ public class UserSetupResponse {
     private String email;
     private String name;
     private Boolean isExistingUser;
-    private List<ProfileOverview> profiles;
+    private List<ProfileViewModel> profiles;
 }

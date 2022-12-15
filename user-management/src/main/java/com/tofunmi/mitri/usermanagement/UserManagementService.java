@@ -2,7 +2,7 @@ package com.tofunmi.mitri.usermanagement;
 
 import com.tofunmi.mitri.usermanagement.jwt.GoogleJwtValidator;
 import com.tofunmi.mitri.usermanagement.jwt.ValidatedJwtTokenDetails;
-import com.tofunmi.mitri.usermanagement.profile.ProfileOverview;
+import com.tofunmi.mitri.usermanagement.profile.ProfileViewModel;
 import com.tofunmi.mitri.usermanagement.profile.ProfileService;
 import com.tofunmi.mitri.usermanagement.user.User;
 import com.tofunmi.mitri.usermanagement.user.UserRepository;
@@ -41,7 +41,7 @@ public class UserManagementService {
             user = userRepository.save(user);
         }
 
-        List<ProfileOverview> userProfiles = isExistingUser ? profileService.findForUser(user.getId()) : new ArrayList<>();
+        List<ProfileViewModel> userProfiles = isExistingUser ? profileService.findForUser(user.getId()) : new ArrayList<>();
         return new UserSetupResponse(user.getId(), user.getEmail(), user.getFirstName(), isExistingUser, userProfiles);
     }
 }

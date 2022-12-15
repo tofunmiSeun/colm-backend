@@ -1,6 +1,6 @@
 package com.tofunmi.mitri.webservice.post;
 
-import com.tofunmi.mitri.usermanagement.profile.ProfileOverview;
+import com.tofunmi.mitri.usermanagement.profile.ProfileViewModel;
 import com.tofunmi.mitri.usermanagement.profile.ProfileService;
 import com.tofunmi.mitri.webservice.mediacontent.MediaContentService;
 import com.tofunmi.mitri.webservice.mediacontent.SavedMediaContent;
@@ -105,8 +105,8 @@ public class PostService {
 
     private List<PostViewModel> hydratePosts(List<Post> posts, String profileId) {
         Set<String> uniqueProfileIds = posts.stream().map(Post::getAuthor).collect(Collectors.toSet());
-        Map<String, ProfileOverview> profileOverviewMapping = profileService.getProfiles(uniqueProfileIds).stream()
-                .collect(Collectors.toMap(ProfileOverview::getId, item -> item));
+        Map<String, ProfileViewModel> profileOverviewMapping = profileService.getProfiles(uniqueProfileIds).stream()
+                .collect(Collectors.toMap(ProfileViewModel::getId, item -> item));
 
         Set<String> postsLikedByProfile = postReactionService.getIdsForLikedPosts(profileId);
 

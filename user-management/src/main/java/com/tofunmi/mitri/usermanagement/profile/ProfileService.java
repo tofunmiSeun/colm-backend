@@ -29,25 +29,25 @@ public class ProfileService {
         return repository.save(profile).getId();
     }
 
-    public ProfileOverview getProfile(String id) {
+    public ProfileViewModel getProfile(String id) {
         Profile profile = repository.findById(id).orElseThrow();
         return mapToOverview(profile);
     }
 
-    public List<ProfileOverview> getProfiles(Set<String> ids) {
-        List<ProfileOverview> overviews = new ArrayList<>();
+    public List<ProfileViewModel> getProfiles(Set<String> ids) {
+        List<ProfileViewModel> overviews = new ArrayList<>();
         repository.findAllById(ids).forEach(p -> overviews.add(mapToOverview(p)));
         return overviews;
     }
 
-    public List<ProfileOverview> findForUser(String userId) {
+    public List<ProfileViewModel> findForUser(String userId) {
         return repository.findByUserId(userId).stream()
                 .map(this::mapToOverview)
                 .collect(Collectors.toList());
     }
 
-    private ProfileOverview mapToOverview(Profile profile) {
-        ProfileOverview overview = new ProfileOverview();
+    private ProfileViewModel mapToOverview(Profile profile) {
+        ProfileViewModel overview = new ProfileViewModel();
         overview.setId(profile.getId());
         overview.setUsername(profile.getUsername());
         overview.setName(profile.getName());
