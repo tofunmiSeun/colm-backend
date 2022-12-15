@@ -5,6 +5,7 @@ import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.Objects;
 
 /**
  * Created By tofunmi on 15/12/2022
@@ -23,6 +24,10 @@ public class FollowService {
     public void followProfile(String profileToFollow, String followerProfileId) {
         profileService.validateProfileExistence(profileToFollow);
         profileService.validateProfileExistence(followerProfileId);
+
+        if (Objects.equals(profileToFollow, followerProfileId)) {
+            throw new IllegalArgumentException("A profile cannot follow itself");
+        }
 
         FollowId followId = new FollowId(profileToFollow, followerProfileId);
         if (repository.existsById(followId)) {

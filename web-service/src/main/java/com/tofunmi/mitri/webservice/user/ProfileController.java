@@ -30,7 +30,7 @@ public class ProfileController {
     }
 
     @GetMapping("{id}/overview")
-    public ProfileOverview getProfile(@PathVariable String id) {
-        return profileOverviewService.getOverview(id);
+    public ProfileOverview getProfile(@PathVariable String id, @RequestParam String profileId) {
+        return profileOverviewService.getOverview(id, profileId);
     }
 }

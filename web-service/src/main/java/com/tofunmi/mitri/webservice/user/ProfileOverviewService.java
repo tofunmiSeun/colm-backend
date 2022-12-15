@@ -23,7 +23,7 @@ public class ProfileOverviewService {
         this.followService = followService;
     }
 
-    public ProfileOverview getOverview(String id) {
+    public ProfileOverview getOverview(String id, String loggedInUserProfileId) {
         ProfileViewModel viewModel = profileService.getProfile(id);
 
         ProfileOverview overview = new ProfileOverview();
@@ -35,6 +35,7 @@ public class ProfileOverviewService {
         overview.setPostCount(postService.countForProfile(id));
         overview.setFollowingCount(followService.countFollowedProfiles(id));
         overview.setFollowersCount(followService.countFollowers(id));
+        overview.setRequesterFollowsProfile(followService.profileIsBeingFollowed(id, loggedInUserProfileId));
         overview.setLikesCount(postService.countLikesForProfile(id));
 
         return overview;

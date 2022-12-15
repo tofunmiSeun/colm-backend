@@ -15,4 +15,5 @@ public class ProfileOverview {
     private Long followingCount;
     private Long followersCount;
     private Long likesCount;
+    private Boolean requesterFollowsProfile;
 }
