@@ -1,6 +1,7 @@
 package com.tofunmi.mitri.webservice.follows;
 
 import com.tofunmi.mitri.usermanagement.profile.ProfileService;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
@@ -17,10 +18,13 @@ import java.util.stream.Collectors;
 public class FollowsService {
     private final FollowRepository repository;
     private final ProfileService profileService;
+    private final ApplicationEventPublisher publisher;
 
-    public FollowsService(FollowRepository repository, ProfileService profileService) {
+    public FollowsService(FollowRepository repository, ProfileService profileService,
+                          ApplicationEventPublisher publisher) {
         this.repository = repository;
         this.profileService = profileService;
+        this.publisher = publisher;
     }
 
     public void followProfile(String profileToFollow, String followerProfileId) {
@@ -40,6 +44,8 @@ public class FollowsService {
         follow.setFollowId(followId);
         follow.setFollowedOn(Instant.now());
         repository.save(follow);
+
+        publisher.publishEvent(new ProfileFollowedEvent(followerProfileId, profileToFollow));
     }
 
     public void unfollowProfile(String profileToUnfollow, String followerProfileId) {
@@ -47,7 +53,10 @@ public class FollowsService {
         profileService.validateProfileExistence(followerProfileId);
 
         FollowId followId = new FollowId(profileToUnfollow, followerProfileId);
-        repository.deleteById(followId);
+        if (repository.existsById(followId)) {
+            repository.deleteById(followId);
+            publisher.publishEvent(new ProfileUnfollowedEvent(followerProfileId, profileToUnfollow));
+        }
     }
 
     public boolean profileIsBeingFollowed(String followedProfile, String followerProfileId) {
