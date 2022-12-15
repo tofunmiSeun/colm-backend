@@ -125,4 +125,8 @@ public class PostService {
         post.setDeletedAt(Instant.now());
         repository.save(post);
     }
+
+    public Long countForProfile(String profileId) {
+        return repository.countAllByAuthor(profileId);
+    }
 }

@@ -1,6 +1,5 @@
 package com.tofunmi.mitri.webservice.user;
 
-import com.tofunmi.mitri.usermanagement.profile.ProfileViewModel;
 import com.tofunmi.mitri.usermanagement.profile.ProfileService;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,9 +12,11 @@ import java.security.Principal;
 @RequestMapping("profile")
 public class ProfileController {
     private final ProfileService profileService;
+    private final ProfileOverviewService profileOverviewService;
 
-    public ProfileController(ProfileService profileService) {
+    public ProfileController(ProfileService profileService, ProfileOverviewService profileOverviewService) {
         this.profileService = profileService;
+        this.profileOverviewService = profileOverviewService;
     }
 
     @GetMapping("available")
@@ -28,8 +29,8 @@ public class ProfileController {
         return profileService.createProfile(principal.getName(), username);
     }
 
-    @GetMapping("{id}")
-    public ProfileViewModel getProfile(@PathVariable String id) {
-        return profileService.getProfile(id);
+    @GetMapping("{id}/overview")
+    public ProfileOverview getProfile(@PathVariable String id) {
+        return profileOverviewService.getOverview(id);
     }
 }

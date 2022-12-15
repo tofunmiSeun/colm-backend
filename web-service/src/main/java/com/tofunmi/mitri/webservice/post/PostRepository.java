@@ -10,4 +10,6 @@ import java.util.List;
  */
 public interface PostRepository extends MongoRepository<Post, String> {
     List<Post> findAllByParentPostId(String parentPostId, Sort sort);
+
+    Long countAllByAuthor(String author);
 }
