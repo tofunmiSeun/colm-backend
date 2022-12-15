@@ -23,4 +23,5 @@ public class Post {
     @CreatedDate
     private Instant createdOn;
     private List<SavedMediaContent> mediaContents;
+    private Instant deletedAt;
 }

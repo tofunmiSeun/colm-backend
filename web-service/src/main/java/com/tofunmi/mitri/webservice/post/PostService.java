@@ -37,20 +37,15 @@ public class PostService {
     }
 
     public void createPost(String profileId, String textContent, MultipartFile[] mediaContents) {
-        boolean postContainsContent = (mediaContents != null && mediaContents.length > 0) ||
-                StringUtils.hasText(textContent);
-        Assert.isTrue(postContainsContent, "At least some text or one media content is required");
-
         Post post = newPost(textContent, profileId, mediaContents);
         repository.save(post);
     }
 
     public void replyToPost(String originalPostId, String profileId, String textContent, MultipartFile[] mediaContents) {
         Assert.hasText(originalPostId, "Invalid post id to reply");
-        Assert.isTrue(repository.existsById(originalPostId), String.format("No post with id %s", originalPostId));
-        boolean postContainsContent = (mediaContents != null && mediaContents.length > 0) ||
-                StringUtils.hasText(textContent);
-        Assert.isTrue(postContainsContent, "At least some text or one media content is required");
+        Post originalPost = repository.findById(originalPostId)
+                .orElseThrow(() -> new IllegalArgumentException(String.format("No post with id %s", originalPostId)));
+        Assert.isNull(originalPost.getDeletedAt(), "Post has been deleted");
 
         Post post = newPost(textContent, profileId, mediaContents);
         post.setParentPostId(originalPostId);
@@ -60,6 +55,9 @@ public class PostService {
 
     private Post newPost(String content, String profileId, MultipartFile[] mediaContents) {
         Assert.isTrue(profileService.exists(profileId), String.format("Profile with id %s does not exist", profileId));
+        boolean postContainsContent = (mediaContents != null && mediaContents.length > 0) ||
+                StringUtils.hasText(content);
+        Assert.isTrue(postContainsContent, "At least some text or one media content is required");
 
         Post post = new Post();
         post.setContent(content);
@@ -90,6 +88,7 @@ public class PostService {
 
     public List<PostViewModel> getForProfile(String profileId) {
         List<Post> posts = repository.findAll(sort).stream()
+                .filter(e -> e.getDeletedAt() == null)
                 .filter(e -> !StringUtils.hasText(e.getParentPostId()))
                 .collect(Collectors.toList());
 
@@ -97,11 +96,14 @@ public class PostService {
     }
 
     public List<PostViewModel> getReplies(String id, String profileId) {
-        List<Post> repliesToPost = repository.findAllByParentPostId(id, sort);
+        List<Post> repliesToPost = repository.findAllByParentPostId(id, sort).stream()
+                .filter(e -> e.getDeletedAt() == null)
+                .collect(Collectors.toList());
+
         return hydratePosts(repliesToPost, profileId);
     }
 
-    public List<PostViewModel> hydratePosts(List<Post> posts, String profileId) {
+    private List<PostViewModel> hydratePosts(List<Post> posts, String profileId) {
         Set<String> uniqueProfileIds = posts.stream().map(Post::getAuthor).collect(Collectors.toSet());
         Map<String, ProfileOverview> profileOverviewMapping = profileService.getProfiles(uniqueProfileIds).stream()
                 .collect(Collectors.toMap(ProfileOverview::getId, item -> item));
@@ -114,5 +116,12 @@ public class PostService {
                         profileOverviewMapping.get(e.getAuthor()).getName(),
                         postsLikedByProfile.contains(e.getId())))
                 .collect(Collectors.toList());
+    }
+
+    public void deletePost(String id, String profileId) {
+        Post post = repository.findById(id).orElseThrow();
+        Assert.isTrue(Objects.equals(post.getAuthor(), profileId), "A profile cannot delete a post that it did not create");
+        post.setDeletedAt(Instant.now());
+        repository.save(post);
     }
 }

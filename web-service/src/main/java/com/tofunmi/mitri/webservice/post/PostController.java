@@ -64,4 +64,10 @@ public class PostController {
         profileService.validateProfileBelongsToUser(profileId, principal.getName());
         return postService.getReplies(id, profileId);
     }
+
+    @DeleteMapping("{id}")
+    public void delete(@RequestParam String profileId, @PathVariable("id") String id, Principal principal) {
+        profileService.validateProfileBelongsToUser(profileId, principal.getName());
+        postService.deletePost(id, profileId);
+    }
 }
