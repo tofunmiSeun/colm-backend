@@ -2,6 +2,7 @@ package com.tofunmi.mitri.webservice.user;
 
 import com.tofunmi.mitri.usermanagement.profile.ProfileService;
 import com.tofunmi.mitri.usermanagement.profile.ProfileViewModel;
+import com.tofunmi.mitri.webservice.follows.FollowService;
 import com.tofunmi.mitri.webservice.post.PostService;
 import org.springframework.stereotype.Service;
 
@@ -12,10 +13,14 @@ import org.springframework.stereotype.Service;
 public class ProfileOverviewService {
     private final ProfileService profileService;
     private final PostService postService;
+    private final FollowService followService;
 
-    public ProfileOverviewService(ProfileService profileService, PostService postService) {
+    public ProfileOverviewService(ProfileService profileService,
+                                  PostService postService,
+                                  FollowService followService) {
         this.profileService = profileService;
         this.postService = postService;
+        this.followService = followService;
     }
 
     public ProfileOverview getOverview(String id) {
@@ -28,8 +33,8 @@ public class ProfileOverviewService {
         overview.setDescription(viewModel.getDescription());
 
         overview.setPostCount(postService.countForProfile(id));
-        overview.setFollowingCount(0L);
-        overview.setFollowersCount(0L);
+        overview.setFollowingCount(followService.countFollowedProfiles(id));
+        overview.setFollowersCount(followService.countFollowers(id));
         overview.setLikesCount(postService.countLikesForProfile(id));
 
         return overview;
