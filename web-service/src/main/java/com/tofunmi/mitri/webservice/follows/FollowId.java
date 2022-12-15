@@ -1,6 +1,7 @@
 package com.tofunmi.mitri.webservice.follows;
 
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
@@ -8,6 +9,7 @@ import lombok.NoArgsConstructor;
  */
 @AllArgsConstructor
 @NoArgsConstructor
+@Data
 public class FollowId {
     private String followedProfileId;
     private String followerProfileId;

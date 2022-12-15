@@ -2,6 +2,7 @@ package com.tofunmi.mitri.webservice.post;
 
 import com.tofunmi.mitri.usermanagement.profile.ProfileViewModel;
 import com.tofunmi.mitri.usermanagement.profile.ProfileService;
+import com.tofunmi.mitri.webservice.follows.FollowsService;
 import com.tofunmi.mitri.webservice.mediacontent.MediaContentService;
 import com.tofunmi.mitri.webservice.mediacontent.SavedMediaContent;
 import org.springframework.data.domain.Sort;
@@ -24,16 +25,19 @@ public class PostService {
     private final ProfileService profileService;
     private final PostReactionService postReactionService;
     private final MediaContentService mediaContentService;
+    private final FollowsService followsService;
 
     private final Sort sort = Sort.by("createdOn").descending();
 
     public PostService(PostRepository repository, ProfileService profileService,
                        PostReactionService postReactionService,
-                       MediaContentService mediaContentService) {
+                       MediaContentService mediaContentService,
+                       FollowsService followsService) {
         this.repository = repository;
         this.profileService = profileService;
         this.postReactionService = postReactionService;
         this.mediaContentService = mediaContentService;
+        this.followsService = followsService;
     }
 
     public void createPost(String profileId, String textContent, MultipartFile[] mediaContents) {
@@ -87,10 +91,14 @@ public class PostService {
         return savedMediaContents;
     }
 
-    public List<PostViewModel> getForProfile(String profileId) {
+    public List<PostViewModel> getForFeed(String profileId) {
+        Set<String> followedProfiles = followsService.getFollowedProfiles(profileId);
+        followedProfiles.add(profileId);
+
         List<Post> posts = repository.findAll(sort).stream()
                 .filter(e -> e.getDeletedAt() == null)
                 .filter(e -> !StringUtils.hasText(e.getParentPostId()))
+                .filter(e -> followedProfiles.contains(e.getAuthor()))
                 .collect(Collectors.toList());
 
         return hydratePosts(posts, profileId);

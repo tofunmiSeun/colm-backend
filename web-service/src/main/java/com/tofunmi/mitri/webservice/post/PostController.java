@@ -32,10 +32,10 @@ public class PostController {
         postService.createPost(profileId, text, files);
     }
 
-    @GetMapping
-    public List<PostViewModel> getAllPosts(@RequestParam String profileId, Principal principal) {
+    @GetMapping("feed")
+    public List<PostViewModel> getPostsForFeed(@RequestParam String profileId, Principal principal) {
         profileService.validateProfileBelongsToUser(profileId, principal.getName());
-        return postService.getForProfile(profileId);
+        return postService.getForFeed(profileId);
     }
 
     @PostMapping("{id}/like")

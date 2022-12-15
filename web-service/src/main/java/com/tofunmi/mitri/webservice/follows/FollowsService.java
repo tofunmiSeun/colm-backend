@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Created By tofunmi on 15/12/2022
@@ -66,6 +68,18 @@ public class FollowsService {
         return repository.count(Example.of(follow));
     }
 
+    public Set<String> getFollowersProfiles(String profileId) {
+        profileService.validateProfileExistence(profileId);
+
+        FollowId followId = new FollowId(profileId, null);
+        Follow follow = new Follow();
+        follow.setFollowId(followId);
+
+        return repository.findAll(Example.of(follow)).stream()
+                .map(e -> e.getFollowId().getFollowerProfileId())
+                .collect(Collectors.toSet());
+    }
+
     public Long countFollowedProfiles(String profileId) {
         profileService.validateProfileExistence(profileId);
 
@@ -74,5 +88,17 @@ public class FollowsService {
         follow.setFollowId(followId);
 
         return repository.count(Example.of(follow));
+    }
+
+    public Set<String> getFollowedProfiles(String profileId) {
+        profileService.validateProfileExistence(profileId);
+
+        FollowId followId = new FollowId(null, profileId);
+        Follow follow = new Follow();
+        follow.setFollowId(followId);
+
+        return repository.findAll(Example.of(follow)).stream()
+                .map(e -> e.getFollowId().getFollowedProfileId())
+                .collect(Collectors.toSet());
     }
 }
