@@ -112,7 +112,7 @@ public class PostService {
         return hydratePosts(repliesToPost, profileId);
     }
 
-    private List<PostViewModel> hydratePosts(List<Post> posts, String profileId) {
+    public List<PostViewModel> hydratePosts(List<Post> posts, String profileId) {
         Set<String> uniqueProfileIds = posts.stream().map(Post::getAuthor).collect(Collectors.toSet());
         Map<String, ProfileViewModel> profileOverviewMapping = profileService.getProfiles(uniqueProfileIds).stream()
                 .collect(Collectors.toMap(ProfileViewModel::getId, item -> item));

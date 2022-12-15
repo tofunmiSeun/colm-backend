@@ -46,7 +46,7 @@ public class ProfileService {
                 .collect(Collectors.toList());
     }
 
-    private ProfileViewModel mapToViewModel(Profile profile) {
+    public ProfileViewModel mapToViewModel(Profile profile) {
         ProfileViewModel overview = new ProfileViewModel();
         overview.setId(profile.getId());
         overview.setUsername(profile.getUsername());
