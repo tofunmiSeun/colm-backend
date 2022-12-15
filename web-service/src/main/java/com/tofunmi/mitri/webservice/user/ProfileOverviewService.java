@@ -27,7 +27,7 @@ public class ProfileOverviewService {
         overview.setName(viewModel.getName());
         overview.setDescription(viewModel.getDescription());
 
-        overview.setPostCounts(postService.countForProfile(id));
+        overview.setPostCount(postService.countForProfile(id));
         overview.setFollowingCount(0L);
         overview.setFollowersCount(0L);
 

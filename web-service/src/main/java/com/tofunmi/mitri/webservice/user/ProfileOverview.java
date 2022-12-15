@@ -11,7 +11,7 @@ public class ProfileOverview {
     private String username;
     private String name;
     private String description;
-    private Long postCounts;
+    private Long postCount;
     private Long followingCount;
     private Long followersCount;
     private Long likesCount;
