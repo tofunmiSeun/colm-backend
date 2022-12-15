@@ -1,6 +1,7 @@
 package com.tofunmi.mitri.webservice.user;
 
 import com.tofunmi.mitri.usermanagement.profile.ProfileService;
+import com.tofunmi.mitri.webservice.follows.FollowsService;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -13,10 +14,12 @@ import java.security.Principal;
 public class ProfileController {
     private final ProfileService profileService;
     private final ProfileOverviewService profileOverviewService;
+    private final FollowsService followsService;
 
-    public ProfileController(ProfileService profileService, ProfileOverviewService profileOverviewService) {
+    public ProfileController(ProfileService profileService, ProfileOverviewService profileOverviewService, FollowsService followsService) {
         this.profileService = profileService;
         this.profileOverviewService = profileOverviewService;
+        this.followsService = followsService;
     }
 
     @GetMapping("available")
@@ -32,5 +35,17 @@ public class ProfileController {
     @GetMapping("{id}/overview")
     public ProfileOverview getProfile(@PathVariable String id, @RequestParam String profileId) {
         return profileOverviewService.getOverview(id, profileId);
+    }
+
+    @PostMapping("{id}/follow")
+    public void follow(@PathVariable String id, @RequestParam String profileId, Principal principal) {
+        profileService.validateProfileBelongsToUser(profileId, principal.getName());
+        followsService.followProfile(id, profileId);
+    }
+
+    @PostMapping("{id}/unfollow")
+    public void unfollow(@PathVariable String id, @RequestParam String profileId, Principal principal) {
+        profileService.validateProfileBelongsToUser(profileId, principal.getName());
+        followsService.unfollowProfile(id, profileId);
     }
 }
