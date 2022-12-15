@@ -1,13 +1,15 @@
 package com.tofunmi.mitri.webservice.interactions;
 
 import com.tofunmi.mitri.usermanagement.profile.ProfileService;
-import com.tofunmi.mitri.webservice.follows.FollowsService;
+import com.tofunmi.mitri.webservice.follows.ProfileFollowedEvent;
+import com.tofunmi.mitri.webservice.follows.ProfileUnfollowedEvent;
 import com.tofunmi.mitri.webservice.post.PostReactionService;
+import com.tofunmi.mitri.webservice.post.PostReplyPublishedEvent;
 import com.tofunmi.mitri.webservice.post.PostService;
 import com.tofunmi.mitri.webservice.post.Reaction;
+import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 
 import java.util.List;
 import java.util.Map;
@@ -22,30 +24,40 @@ public class InteractionService {
     private final ProfileService profileService;
     private final PostService postService;
     private final PostReactionService postReactionService;
-    private final FollowsService followsService;
 
     public InteractionService(InteractionRepository repository, ProfileService profileService,
-                              PostService postService, PostReactionService postReactionService,
-                              FollowsService followsService) {
+                              PostService postService, PostReactionService postReactionService) {
         this.repository = repository;
         this.profileService = profileService;
         this.postService = postService;
         this.postReactionService = postReactionService;
-        this.followsService = followsService;
     }
 
-    public void newFollow(String follower, String followed) {
+    @EventListener
+    public void handleProfileFollowedEvent(ProfileFollowedEvent event) {
+        String follower = event.getFollower();
+        String followed = event.getFollowed();
         Interaction interaction = newInteraction(follower, followed, InteractionType.FOLLOW);
-        Assert.isTrue(followsService.profileIsBeingFollowed(followed, follower),
-                String.format("Followership %s->%s does not exist", follower, followed));
         repository.save(interaction);
     }
 
-    public void newPostReply(String replyAuthor, String originalPostAuthor, String postId, String replyId) {
+    @EventListener
+    public void handleProfileUnfollowedEvent(ProfileUnfollowedEvent event) {
+        String follower = event.getFollower();
+        String followed = event.getFollowed();
+        Example<Interaction> example = getExampleForNonNotifiedRecipient(follower, followed, InteractionType.FOLLOW);
+        repository.deleteAll(repository.findAll(example));
+    }
+
+    @EventListener
+    public void handlePostReplyPublishedEvent(PostReplyPublishedEvent event) {
+        String replyId = event.getReplyId();
+        String replyAuthor = event.getReplyAuthor();
+        String originalPostId = event.getOriginalPostId();
+        String originalPostAuthor = event.getOriginalPostAuthor();
+
         Interaction interaction = newInteraction(replyAuthor, originalPostAuthor, InteractionType.POST_REPLY);
-        postService.validatePostExistence(postId);
-        postService.validatePostExistence(replyId);
-        interaction.setPostId(postId);
+        interaction.setPostId(originalPostId);
         interaction.setReplyId(replyId);
         repository.save(interaction);
     }
@@ -63,6 +75,15 @@ public class InteractionService {
         profileService.validateProfileExistence(actor);
         profileService.validateProfileExistence(recipient);
         return new Interaction(actor, recipient, type);
+    }
+
+    private Example<Interaction> getExampleForNonNotifiedRecipient(String actor, String recipient, InteractionType type) {
+        Interaction interactionExample = new Interaction();
+        interactionExample.setActor(actor);
+        interactionExample.setRecipient(recipient);
+        interactionExample.setType(type);
+        interactionExample.setRecipientHasBeenNotified(false);
+        return Example.of(interactionExample);
     }
 
     public void markAsNotified(String id) {
