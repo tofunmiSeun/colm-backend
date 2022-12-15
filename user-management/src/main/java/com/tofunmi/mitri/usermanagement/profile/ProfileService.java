@@ -31,22 +31,22 @@ public class ProfileService {
 
     public ProfileViewModel getProfile(String id) {
         Profile profile = repository.findById(id).orElseThrow();
-        return mapToOverview(profile);
+        return mapToViewModel(profile);
     }
 
     public List<ProfileViewModel> getProfiles(Set<String> ids) {
         List<ProfileViewModel> overviews = new ArrayList<>();
-        repository.findAllById(ids).forEach(p -> overviews.add(mapToOverview(p)));
+        repository.findAllById(ids).forEach(p -> overviews.add(mapToViewModel(p)));
         return overviews;
     }
 
     public List<ProfileViewModel> findForUser(String userId) {
         return repository.findByUserId(userId).stream()
-                .map(this::mapToOverview)
+                .map(this::mapToViewModel)
                 .collect(Collectors.toList());
     }
 
-    private ProfileViewModel mapToOverview(Profile profile) {
+    private ProfileViewModel mapToViewModel(Profile profile) {
         ProfileViewModel overview = new ProfileViewModel();
         overview.setId(profile.getId());
         overview.setUsername(profile.getUsername());
