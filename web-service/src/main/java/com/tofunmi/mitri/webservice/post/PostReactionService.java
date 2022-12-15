@@ -1,6 +1,7 @@
 package com.tofunmi.mitri.webservice.post;
 
-import org.springframework.data.domain.Example;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
@@ -14,10 +15,27 @@ import java.util.stream.Collectors;
 public class PostReactionService {
     private final PostReactionRepository repository;
     private final PostRepository postRepository;
+    private final ApplicationEventPublisher publisher;
 
-    public PostReactionService(PostReactionRepository repository, PostRepository postRepository) {
+    public PostReactionService(PostReactionRepository repository, PostRepository postRepository,
+                               ApplicationEventPublisher publisher) {
         this.repository = repository;
         this.postRepository = postRepository;
+        this.publisher = publisher;
+    }
+
+    @EventListener
+    public void handlePostLikedEvent(PostLikedEvent event) {
+        Post post = postRepository.findById(event.getPostId()).orElseThrow();
+        post.setLikesCount(post.getLikesCount() + 1);
+        postRepository.save(post);
+    }
+
+    @EventListener
+    public void handlePostLikeRemovedEvent(PostLikeRemovedEvent event) {
+        Post post = postRepository.findById(event.getPostId()).orElseThrow();
+        post.setLikesCount(Math.max(post.getLikesCount() - 1, 0));
+        postRepository.save(post);
     }
 
     public void react(String postId, String profileId, Reaction reaction) {
@@ -35,8 +53,7 @@ public class PostReactionService {
 
         if (reaction == Reaction.LIKE) {
             Post post = postRepository.findById(postId).orElseThrow();
-            post.setLikesCount(post.getLikesCount() + 1);
-            postRepository.save(post);
+            publisher.publishEvent(new PostLikedEvent(profileId, post.getAuthor(), post.getId()));
         }
     }
 
@@ -46,8 +63,7 @@ public class PostReactionService {
 
         if (reaction == Reaction.LIKE) {
             Post post = postRepository.findById(postId).orElseThrow();
-            post.setLikesCount(Math.max(post.getLikesCount() - 1, 0));
-            postRepository.save(post);
+            publisher.publishEvent(new PostLikeRemovedEvent(profileId, post.getAuthor(), post.getId()));
         }
     }
 
@@ -62,13 +78,5 @@ public class PostReactionService {
         Assert.hasText(postId, "Post id is invalid");
         Assert.notNull(reaction, String.format("%s cannot be null", reaction));
         Assert.isTrue(postRepository.findById(postId).isPresent(), String.format("Could not find post for id %s", postId));
-    }
-
-    public void validatePostReactionExists(String postId, Reaction reaction) {
-        PostReaction postReaction = new PostReaction();
-        postReaction.setPostId(postId);
-        postReaction.setReaction(reaction);
-        boolean reactionExists = repository.count(Example.of(postReaction)) > 0;
-        Assert.isTrue(reactionExists, String.format("Could not find %s reaction for id %s", reaction, postId));
     }
 }

@@ -159,8 +159,4 @@ public class PostService {
     public Long countForProfile(String profileId) {
         return repository.countAllByAuthor(profileId);
     }
-
-    public void validatePostExistence(String id) {
-        Assert.isTrue(repository.existsById(id), String.format("Post with id %s does not exist", id));
-    }
 }

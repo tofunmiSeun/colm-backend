@@ -3,10 +3,7 @@ package com.tofunmi.mitri.webservice.interactions;
 import com.tofunmi.mitri.usermanagement.profile.ProfileService;
 import com.tofunmi.mitri.webservice.follows.ProfileFollowedEvent;
 import com.tofunmi.mitri.webservice.follows.ProfileUnfollowedEvent;
-import com.tofunmi.mitri.webservice.post.PostReactionService;
-import com.tofunmi.mitri.webservice.post.PostReplyPublishedEvent;
-import com.tofunmi.mitri.webservice.post.PostService;
-import com.tofunmi.mitri.webservice.post.Reaction;
+import com.tofunmi.mitri.webservice.post.*;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
@@ -22,22 +19,17 @@ import java.util.stream.Collectors;
 public class InteractionService {
     private final InteractionRepository repository;
     private final ProfileService profileService;
-    private final PostService postService;
-    private final PostReactionService postReactionService;
 
-    public InteractionService(InteractionRepository repository, ProfileService profileService,
-                              PostService postService, PostReactionService postReactionService) {
+    public InteractionService(InteractionRepository repository, ProfileService profileService) {
         this.repository = repository;
         this.profileService = profileService;
-        this.postService = postService;
-        this.postReactionService = postReactionService;
     }
 
     @EventListener
     public void handleProfileFollowedEvent(ProfileFollowedEvent event) {
         String follower = event.getFollower();
         String followed = event.getFollowed();
-        Interaction interaction = newInteraction(follower, followed, InteractionType.FOLLOW);
+        Interaction interaction = new Interaction(follower, followed, InteractionType.FOLLOW);
         repository.save(interaction);
     }
 
@@ -56,25 +48,34 @@ public class InteractionService {
         String originalPostId = event.getOriginalPostId();
         String originalPostAuthor = event.getOriginalPostAuthor();
 
-        Interaction interaction = newInteraction(replyAuthor, originalPostAuthor, InteractionType.POST_REPLY);
+        Interaction interaction = new Interaction(replyAuthor, originalPostAuthor, InteractionType.POST_REPLY);
         interaction.setPostId(originalPostId);
         interaction.setReplyId(replyId);
         repository.save(interaction);
     }
 
-    public void newPostReaction(String reactor, String originalPostAuthor, String postId, Reaction reaction) {
-        Interaction interaction = newInteraction(reactor, originalPostAuthor, InteractionType.POST_REACTION);
-        postService.validatePostExistence(postId);
-        postReactionService.validatePostReactionExists(postId, reaction);
+    @EventListener
+    public void handlePostLikedEvent(PostLikedEvent event) {
+        String postLiker = event.getProfileThatLikedPost();
+        String postId = event.getPostId();
+        String originalPostAuthor = event.getOriginalPostAuthor();
+
+        Interaction interaction = new Interaction(postLiker, originalPostAuthor, InteractionType.POST_REACTION);
         interaction.setPostId(postId);
-        interaction.setReaction(reaction);
+        interaction.setReaction(Reaction.LIKE);
         repository.save(interaction);
     }
 
-    private Interaction newInteraction(String actor, String recipient, InteractionType type) {
-        profileService.validateProfileExistence(actor);
-        profileService.validateProfileExistence(recipient);
-        return new Interaction(actor, recipient, type);
+    @EventListener
+    public void handlePostLikeRemovedEvent(PostLikeRemovedEvent event) {
+        String postLiker = event.getProfileThatLikedPost();
+        String postId = event.getPostId();
+        String originalPostAuthor = event.getOriginalPostAuthor();
+
+        Example<Interaction> example = getExampleForNonNotifiedRecipient(postLiker, originalPostAuthor, InteractionType.POST_REACTION);
+        example.getProbe().setPostId(postId);
+        example.getProbe().setReaction(Reaction.LIKE);
+        repository.deleteAll(repository.findAll(example));
     }
 
     private Example<Interaction> getExampleForNonNotifiedRecipient(String actor, String recipient, InteractionType type) {
