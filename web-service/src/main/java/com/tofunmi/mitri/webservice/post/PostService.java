@@ -5,6 +5,7 @@ import com.tofunmi.mitri.usermanagement.profile.ProfileService;
 import com.tofunmi.mitri.webservice.follows.FollowsService;
 import com.tofunmi.mitri.webservice.mediacontent.MediaContentService;
 import com.tofunmi.mitri.webservice.mediacontent.SavedMediaContent;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -26,18 +27,20 @@ public class PostService {
     private final PostReactionService postReactionService;
     private final MediaContentService mediaContentService;
     private final FollowsService followsService;
+    private final ApplicationEventPublisher publisher;
 
     private final Sort sort = Sort.by("createdOn").descending();
 
     public PostService(PostRepository repository, ProfileService profileService,
                        PostReactionService postReactionService,
                        MediaContentService mediaContentService,
-                       FollowsService followsService) {
+                       FollowsService followsService, ApplicationEventPublisher publisher) {
         this.repository = repository;
         this.profileService = profileService;
         this.postReactionService = postReactionService;
         this.mediaContentService = mediaContentService;
         this.followsService = followsService;
+        this.publisher = publisher;
     }
 
     public void createPost(String profileId, String textContent, MultipartFile[] mediaContents) {
@@ -51,10 +54,10 @@ public class PostService {
                 .orElseThrow(() -> new IllegalArgumentException(String.format("No post with id %s", originalPostId)));
         Assert.isNull(originalPost.getDeletedAt(), "Post has been deleted");
 
-        Post post = newPost(textContent, profileId, mediaContents);
-        post.setParentPostId(originalPostId);
-
-        repository.save(post);
+        Post reply = newPost(textContent, profileId, mediaContents);
+        reply.setParentPostId(originalPostId);
+        reply = repository.save(reply);
+        publisher.publishEvent(new PostReplyPublishedEvent(reply.getId(), reply.getAuthor(), originalPostId, originalPost.getAuthor()));
     }
 
     private Post newPost(String content, String profileId, MultipartFile[] mediaContents) {
