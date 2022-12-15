@@ -54,7 +54,7 @@ public class PostService {
     }
 
     private Post newPost(String content, String profileId, MultipartFile[] mediaContents) {
-        Assert.isTrue(profileService.exists(profileId), String.format("Profile with id %s does not exist", profileId));
+       profileService.validateProfileExistence(profileId);
         boolean postContainsContent = (mediaContents != null && mediaContents.length > 0) ||
                 StringUtils.hasText(content);
         Assert.isTrue(postContainsContent, "At least some text or one media content is required");

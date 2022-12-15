@@ -62,7 +62,8 @@ public class ProfileService {
         Assert.isTrue(Objects.equals(userId, profile.getUserId()), String.format("Profile %s does not belong to user %s", id, userId));
     }
 
-    public boolean exists(String id) {
-        return repository.existsById(id);
+    public void validateProfileExistence(String id) {
+        boolean profileExists = repository.existsById(id);
+        Assert.isTrue(profileExists, String.format("Profile with id %s does not exist", id));
     }
 }
