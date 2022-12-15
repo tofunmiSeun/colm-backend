@@ -70,4 +70,12 @@ public class PostController {
         profileService.validateProfileBelongsToUser(profileId, principal.getName());
         postService.deletePost(id, profileId);
     }
+
+    @GetMapping("by-profile/{profileId}")
+    public List<PostViewModel> getPostsAuthoredByProfile(@PathVariable("profileId") String profileId,
+                                                         @RequestParam("profileId") String loggedInUserProfileId,
+                                                         Principal principal) {
+        profileService.validateProfileBelongsToUser(loggedInUserProfileId, principal.getName());
+        return postService.findForProfile(profileId, loggedInUserProfileId);
+    }
 }
