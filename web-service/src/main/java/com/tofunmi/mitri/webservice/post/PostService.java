@@ -63,6 +63,7 @@ public class PostService {
         post.setContent(content);
         post.setAuthor(profileId);
         post.setCreatedOn(Instant.now());
+        post.setLikesCount(0L);
 
         List<SavedMediaContent> savedMediaContents = saveMediaContents(mediaContents);
         if (savedMediaContents.size() > 0) {
@@ -115,7 +116,8 @@ public class PostService {
                         e.getContent(), e.getMediaContents(),
                         profileOverviewMapping.get(e.getAuthor()).getUsername(),
                         profileOverviewMapping.get(e.getAuthor()).getName(),
-                        postsLikedByProfile.contains(e.getId())))
+                        postsLikedByProfile.contains(e.getId()),
+                        e.getLikesCount()))
                 .collect(Collectors.toList());
     }
 
@@ -124,6 +126,23 @@ public class PostService {
         Assert.isTrue(Objects.equals(post.getAuthor(), profileId), "A profile cannot delete a post that it did not create");
         post.setDeletedAt(Instant.now());
         repository.save(post);
+    }
+
+    public List<PostViewModel> findForProfile(String profileId, String loggedInUserProfileId) {
+        List<Post> repliesToPost = repository.findAllByAuthor(profileId, sort).stream()
+                .filter(e -> e.getDeletedAt() == null)
+                .collect(Collectors.toList());
+
+        return hydratePosts(repliesToPost, loggedInUserProfileId);
+    }
+
+    public Long countLikesForProfile(String profileId) {
+        return repository.findAllByAuthor(profileId, sort).stream()
+                .filter(e -> e.getDeletedAt() == null)
+                .map(Post::getLikesCount)
+                .filter(Objects::nonNull)
+                .reduce(Long::sum)
+                .orElse(0L);
     }
 
     public Long countForProfile(String profileId) {

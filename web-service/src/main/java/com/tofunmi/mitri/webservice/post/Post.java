@@ -24,4 +24,5 @@ public class Post {
     private Instant createdOn;
     private List<SavedMediaContent> mediaContents;
     private Instant deletedAt;
+    private Long likesCount;
 }

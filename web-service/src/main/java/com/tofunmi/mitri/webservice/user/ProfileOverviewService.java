@@ -30,6 +30,7 @@ public class ProfileOverviewService {
         overview.setPostCount(postService.countForProfile(id));
         overview.setFollowingCount(0L);
         overview.setFollowersCount(0L);
+        overview.setLikesCount(postService.countLikesForProfile(id));
 
         return overview;
     }

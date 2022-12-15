@@ -20,4 +20,5 @@ public class PostViewModel {
     private String authorUsername;
     private String authorName;
     private Boolean likedByProfile;
+    private Long likes;
 }

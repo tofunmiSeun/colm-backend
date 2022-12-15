@@ -31,11 +31,23 @@ public class PostReactionService {
         postReaction.setReaction(reaction);
 
         repository.save(postReaction);
+
+        if (reaction == Reaction.LIKE) {
+            Post post = postRepository.findById(postId).orElseThrow();
+            post.setLikesCount(post.getLikesCount() + 1);
+            postRepository.save(post);
+        }
     }
 
     public void removeReaction(String postId, String profileId, Reaction reaction) {
         validatePostReactionInputs(postId, reaction);
         repository.deleteByPostIdAndProfileId(postId, profileId);
+
+        if (reaction == Reaction.LIKE) {
+            Post post = postRepository.findById(postId).orElseThrow();
+            post.setLikesCount(Math.max(post.getLikesCount() - 1, 0));
+            postRepository.save(post);
+        }
     }
 
     public Set<String> getIdsForLikedPosts(String profileId) {
