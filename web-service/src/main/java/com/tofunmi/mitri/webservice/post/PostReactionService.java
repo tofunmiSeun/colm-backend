@@ -1,5 +1,6 @@
 package com.tofunmi.mitri.webservice.post;
 
+import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
@@ -61,5 +62,13 @@ public class PostReactionService {
         Assert.hasText(postId, "Post id is invalid");
         Assert.notNull(reaction, String.format("%s cannot be null", reaction));
         Assert.isTrue(postRepository.findById(postId).isPresent(), String.format("Could not find post for id %s", postId));
+    }
+
+    public void validatePostReactionExists(String postId, Reaction reaction) {
+        PostReaction postReaction = new PostReaction();
+        postReaction.setPostId(postId);
+        postReaction.setReaction(reaction);
+        boolean reactionExists = repository.count(Example.of(postReaction)) > 0;
+        Assert.isTrue(reactionExists, String.format("Could not find %s reaction for id %s", reaction, postId));
     }
 }
