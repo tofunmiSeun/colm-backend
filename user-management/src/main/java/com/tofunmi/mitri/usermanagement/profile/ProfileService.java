@@ -3,10 +3,7 @@ package com.tofunmi.mitri.usermanagement.profile;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -65,5 +62,12 @@ public class ProfileService {
     public void validateProfileExistence(String id) {
         boolean profileExists = repository.existsById(id);
         Assert.isTrue(profileExists, String.format("Profile with id %s does not exist", id));
+    }
+
+    public Map<String, String> getUsernamesForIds(Collection<String> ids) {
+        Map<String, String> map = new HashMap<>();
+        Iterable<Profile> profiles = repository.findAllById(ids);
+        profiles.forEach(profile -> map.put(profile.getId(), profile.getUsername()));
+        return map;
     }
 }

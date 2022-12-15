@@ -9,6 +9,10 @@ import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 /**
  * Created By tofunmi on 15/12/2022
  */
@@ -55,10 +59,10 @@ public class InteractionService {
         repository.save(interaction);
     }
 
-    private Interaction newInteraction(String actor, String recipient,InteractionType type) {
+    private Interaction newInteraction(String actor, String recipient, InteractionType type) {
         profileService.validateProfileExistence(actor);
         profileService.validateProfileExistence(recipient);
-        return new Interaction(actor, recipient,type);
+        return new Interaction(actor, recipient, type);
     }
 
     public void markAsNotified(String id) {
@@ -72,5 +76,36 @@ public class InteractionService {
         interaction.setRecipient(recipient);
         interaction.setRecipientHasBeenNotified(false);
         return repository.count(Example.of(interaction));
+    }
+
+    public List<InteractionViewModel> getNotificationsForRecipient(String profileId) {
+        List<Interaction> interactions = repository.findAllByRecipient(profileId);
+        List<String> actors = interactions.stream()
+                .map(Interaction::getActor)
+                .collect(Collectors.toList());
+
+        Map<String, String> usernamesForActors = profileService.getUsernamesForIds(actors);
+
+        return interactions.stream()
+                .map(e -> new InteractionViewModel(e.getId(), e.getCreatedOn(),
+                        e.getActor(), e.getRecipientHasBeenNotified(),
+                        e.getPostId(), e.getReplyId(), getDescriptionTemplate(e, usernamesForActors)))
+                .collect(Collectors.toList());
+    }
+
+    private String getDescriptionTemplate(Interaction e,  Map<String, String> usernamesForActors) {
+        String usernameForActor = usernamesForActors.getOrDefault(e.getActor(), "unknown-user");
+        switch (e.getType()) {
+            case FOLLOW -> {
+                return String.format("%s followed you", usernameForActor);
+            }
+            case POST_REPLY -> {
+                return String.format("%s replied to your post", usernameForActor);
+            }
+            case POST_REACTION -> {
+                return String.format("%s reacted to your post", usernameForActor);
+            }
+            default -> throw new IllegalArgumentException("Unknown interaction type " + e.getType());
+        }
     }
 }
