@@ -12,11 +12,11 @@ import java.util.Objects;
  */
 
 @Service
-public class FollowService {
+public class FollowsService {
     private final FollowRepository repository;
     private final ProfileService profileService;
 
-    public FollowService(FollowRepository repository, ProfileService profileService) {
+    public FollowsService(FollowRepository repository, ProfileService profileService) {
         this.repository = repository;
         this.profileService = profileService;
     }
