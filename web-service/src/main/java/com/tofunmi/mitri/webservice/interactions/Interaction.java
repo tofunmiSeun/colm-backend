@@ -22,7 +22,7 @@ public class Interaction {
     private String recipient;
     private InteractionType type;
     @CreatedDate
-    private Instant createdOn;
+    private Instant happenedOn;
     private Boolean recipientHasBeenNotified;
 
     // Metadata about the different interactions currently supported
@@ -35,7 +35,7 @@ public class Interaction {
         this.actor = actor;
         this.recipient = recipient;
         this.type = type;
-        this.createdOn = Instant.now();
+        this.happenedOn = Instant.now();
         this.recipientHasBeenNotified = false;
     }
 }

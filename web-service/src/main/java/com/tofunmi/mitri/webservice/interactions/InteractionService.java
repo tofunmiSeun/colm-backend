@@ -109,7 +109,7 @@ public class InteractionService {
         Map<String, String> usernamesForActors = profileService.getUsernamesForIds(actors);
 
         return interactions.stream()
-                .map(e -> new InteractionViewModel(e.getId(), e.getCreatedOn(),
+                .map(e -> new InteractionViewModel(e.getId(), e.getHappenedOn(),
                         e.getActor(), e.getRecipientHasBeenNotified(),
                         e.getPostId(), e.getReplyId(), getDescriptionTemplate(e, usernamesForActors)))
                 .collect(Collectors.toList());

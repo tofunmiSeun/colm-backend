@@ -12,7 +12,7 @@ import java.time.Instant;
 @AllArgsConstructor
 public class InteractionViewModel {
     private String id;
-    private Instant createdOn;
+    private Instant happenedOn;
     private String actor;
     private Boolean recipientHasBeenNotified;
     private String postId;
