@@ -13,6 +13,8 @@ import java.util.List;
 @AllArgsConstructor
 public class PostViewModel {
     private String id;
+    private String author;
+    private Long createdAtMilliseconds;
     private String content;
     private List<SavedMediaContent> mediaContents;
     private String authorUsername;

@@ -110,7 +110,8 @@ public class PostService {
 
         Set<String> postsLikedByProfile = postReactionService.getIdsForLikedPosts(profileId);
 
-        return posts.stream().map(e -> new PostViewModel(e.getId(),
+        return posts.stream().map(e -> new PostViewModel(e.getId(), e.getAuthor(),
+                        e.getCreatedOn().toEpochMilli(),
                         e.getContent(), e.getMediaContents(),
                         profileOverviewMapping.get(e.getAuthor()).getUsername(),
                         profileOverviewMapping.get(e.getAuthor()).getName(),
