@@ -29,6 +29,6 @@ public class NotificationsController {
     @PostMapping("{id}")
     public void markAsNotified(@PathVariable String id, @RequestParam String profileId, Principal principal) {
         profileService.validateProfileBelongsToUser(profileId, principal.getName());
-        notificationService.markAsNotified(id);
+        notificationService.markAsNotified(id, profileId);
     }
 }

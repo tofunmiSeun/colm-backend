@@ -7,9 +7,11 @@ import com.tofunmi.mitri.webservice.post.*;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -118,8 +120,9 @@ public class NotificationService {
         }
     }
 
-    public void markAsNotified(String id) {
+    public void markAsNotified(String id, String currentlyLoggedInProfile) {
         Notification notification = repository.findById(id).orElseThrow();
+        Assert.isTrue(Objects.equals(currentlyLoggedInProfile, notification.getProfileId()), "Only notifications belonging to a profile can be updated");
         notification.setRecipientHasBeenNotified(true);
         repository.save(notification);
     }
