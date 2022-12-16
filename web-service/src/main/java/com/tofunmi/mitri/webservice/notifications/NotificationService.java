@@ -99,8 +99,9 @@ public class NotificationService {
 
         return notifications.stream()
                 .map(e -> new NotificationViewModel(e.getId(), e.getHappenedOn(),
-                        e.getActor(), e.getRecipientHasBeenNotified(),
-                        e.getPostId(), e.getReplyId(), getDescriptionTemplate(e, usernamesForActors)))
+                        e.getActor(), usernamesForActors.getOrDefault(e.getActor(), "unknown-user"),
+                        e.getType(), e.getRecipientHasBeenNotified(),
+                        e.getPostId(), e.getReplyId(), e.getReaction()))
                 .collect(Collectors.toList());
     }
 

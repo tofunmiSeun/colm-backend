@@ -1,5 +1,6 @@
 package com.tofunmi.mitri.webservice.notifications;
 
+import com.tofunmi.mitri.webservice.post.Reaction;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -14,8 +15,10 @@ public class NotificationViewModel {
     private String id;
     private Instant happenedOn;
     private String actor;
+    private String actorUsername;
+    private NotificationType type;
     private Boolean recipientHasBeenNotified;
     private String postId;
     private String replyId;
-    private String description;
+    private Reaction reaction;
 }
