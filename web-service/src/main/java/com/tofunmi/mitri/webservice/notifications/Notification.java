@@ -1,4 +1,4 @@
-package com.tofunmi.mitri.webservice.interactions;
+package com.tofunmi.mitri.webservice.notifications;
 
 import com.tofunmi.mitri.webservice.post.Reaction;
 import lombok.Data;
@@ -14,26 +14,26 @@ import java.time.Instant;
  */
 @Data
 @NoArgsConstructor
-@Document("interaction")
-public class Interaction {
+@Document("notifications")
+public class Notification {
     @Id
     private String id;
+    private String profileId;
     private String actor;
-    private String recipient;
-    private InteractionType type;
+    private NotificationType type;
     @CreatedDate
     private Instant happenedOn;
     private Boolean recipientHasBeenNotified;
 
-    // Metadata about the different interactions currently supported
+    // Metadata about the different notifications currently supported
     // How these are used can be seen in where the different interactions are created
     private String postId;
     private String replyId;
     private Reaction reaction;
 
-    public Interaction(String actor, String recipient, InteractionType type) {
+    public Notification(String actor, String profileId, NotificationType type) {
         this.actor = actor;
-        this.recipient = recipient;
+        this.profileId = profileId;
         this.type = type;
         this.happenedOn = Instant.now();
         this.recipientHasBeenNotified = false;

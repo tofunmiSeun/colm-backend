@@ -1,4 +1,4 @@
-package com.tofunmi.mitri.webservice.interactions;
+package com.tofunmi.mitri.webservice.notifications;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,7 +10,7 @@ import java.time.Instant;
  */
 @Data
 @AllArgsConstructor
-public class InteractionViewModel {
+public class NotificationViewModel {
     private String id;
     private Instant happenedOn;
     private String actor;

@@ -1,4 +1,4 @@
-package com.tofunmi.mitri.webservice.interactions;
+package com.tofunmi.mitri.webservice.notifications;
 
 import com.tofunmi.mitri.usermanagement.profile.ProfileService;
 import com.tofunmi.mitri.webservice.follows.ProfileFollowedEvent;
@@ -16,11 +16,11 @@ import java.util.stream.Collectors;
  * Created By tofunmi on 15/12/2022
  */
 @Service
-public class InteractionService {
-    private final InteractionRepository repository;
+public class NotificationService {
+    private final NotificationRepository repository;
     private final ProfileService profileService;
 
-    public InteractionService(InteractionRepository repository, ProfileService profileService) {
+    public NotificationService(NotificationRepository repository, ProfileService profileService) {
         this.repository = repository;
         this.profileService = profileService;
     }
@@ -29,15 +29,15 @@ public class InteractionService {
     public void handleProfileFollowedEvent(ProfileFollowedEvent event) {
         String follower = event.getFollower();
         String followed = event.getFollowed();
-        Interaction interaction = new Interaction(follower, followed, InteractionType.FOLLOW);
-        repository.save(interaction);
+        Notification notification = new Notification(follower, followed, NotificationType.FOLLOW);
+        repository.save(notification);
     }
 
     @EventListener
     public void handleProfileUnfollowedEvent(ProfileUnfollowedEvent event) {
         String follower = event.getFollower();
         String followed = event.getFollowed();
-        Example<Interaction> example = getExampleForNonNotifiedRecipient(follower, followed, InteractionType.FOLLOW);
+        Example<Notification> example = getExampleForNonNotifiedRecipient(follower, followed, NotificationType.FOLLOW);
         repository.deleteAll(repository.findAll(example));
     }
 
@@ -48,10 +48,10 @@ public class InteractionService {
         String originalPostId = event.getOriginalPostId();
         String originalPostAuthor = event.getOriginalPostAuthor();
 
-        Interaction interaction = new Interaction(replyAuthor, originalPostAuthor, InteractionType.POST_REPLY);
-        interaction.setPostId(originalPostId);
-        interaction.setReplyId(replyId);
-        repository.save(interaction);
+        Notification notification = new Notification(replyAuthor, originalPostAuthor, NotificationType.POST_REPLY);
+        notification.setPostId(originalPostId);
+        notification.setReplyId(replyId);
+        repository.save(notification);
     }
 
     @EventListener
@@ -60,10 +60,10 @@ public class InteractionService {
         String postId = event.getPostId();
         String originalPostAuthor = event.getOriginalPostAuthor();
 
-        Interaction interaction = new Interaction(postLiker, originalPostAuthor, InteractionType.POST_REACTION);
-        interaction.setPostId(postId);
-        interaction.setReaction(Reaction.LIKE);
-        repository.save(interaction);
+        Notification notification = new Notification(postLiker, originalPostAuthor, NotificationType.POST_REACTION);
+        notification.setPostId(postId);
+        notification.setReaction(Reaction.LIKE);
+        repository.save(notification);
     }
 
     @EventListener
@@ -72,50 +72,37 @@ public class InteractionService {
         String postId = event.getPostId();
         String originalPostAuthor = event.getOriginalPostAuthor();
 
-        Example<Interaction> example = getExampleForNonNotifiedRecipient(postLiker, originalPostAuthor, InteractionType.POST_REACTION);
+        Example<Notification> example = getExampleForNonNotifiedRecipient(postLiker, originalPostAuthor, NotificationType.POST_REACTION);
         example.getProbe().setPostId(postId);
         example.getProbe().setReaction(Reaction.LIKE);
         repository.deleteAll(repository.findAll(example));
     }
 
-    private Example<Interaction> getExampleForNonNotifiedRecipient(String actor, String recipient, InteractionType type) {
-        Interaction interactionExample = new Interaction();
-        interactionExample.setActor(actor);
-        interactionExample.setRecipient(recipient);
-        interactionExample.setType(type);
-        interactionExample.setRecipientHasBeenNotified(false);
-        return Example.of(interactionExample);
+    private Example<Notification> getExampleForNonNotifiedRecipient(String actor, String recipient, NotificationType type) {
+        Notification notificationExample = new Notification();
+        notificationExample.setActor(actor);
+        notificationExample.setProfileId(recipient);
+        notificationExample.setType(type);
+        notificationExample.setRecipientHasBeenNotified(false);
+        return Example.of(notificationExample);
     }
 
-    public void markAsNotified(String id) {
-        Interaction interaction = repository.findById(id).orElseThrow();
-        interaction.setRecipientHasBeenNotified(true);
-        repository.save(interaction);
-    }
-
-    public Long countNewNotifications(String recipient) {
-        Interaction interaction = new Interaction();
-        interaction.setRecipient(recipient);
-        interaction.setRecipientHasBeenNotified(false);
-        return repository.count(Example.of(interaction));
-    }
-
-    public List<InteractionViewModel> getNotificationsForRecipient(String profileId) {
-        List<Interaction> interactions = repository.findAllByRecipient(profileId);
-        List<String> actors = interactions.stream()
-                .map(Interaction::getActor)
+    public List<NotificationViewModel> getNotificationsForProfile(String profileId) {
+        List<Notification> notifications = repository.findAllByProfileId(profileId);
+        List<String> actors = notifications.stream()
+                .map(Notification::getActor)
                 .collect(Collectors.toList());
 
         Map<String, String> usernamesForActors = profileService.getUsernamesForIds(actors);
 
-        return interactions.stream()
-                .map(e -> new InteractionViewModel(e.getId(), e.getHappenedOn(),
+        return notifications.stream()
+                .map(e -> new NotificationViewModel(e.getId(), e.getHappenedOn(),
                         e.getActor(), e.getRecipientHasBeenNotified(),
                         e.getPostId(), e.getReplyId(), getDescriptionTemplate(e, usernamesForActors)))
                 .collect(Collectors.toList());
     }
 
-    private String getDescriptionTemplate(Interaction e,  Map<String, String> usernamesForActors) {
+    private String getDescriptionTemplate(Notification e, Map<String, String> usernamesForActors) {
         String usernameForActor = usernamesForActors.getOrDefault(e.getActor(), "unknown-user");
         switch (e.getType()) {
             case FOLLOW -> {
@@ -129,5 +116,18 @@ public class InteractionService {
             }
             default -> throw new IllegalArgumentException("Unknown interaction type " + e.getType());
         }
+    }
+
+    public void markAsNotified(String id) {
+        Notification notification = repository.findById(id).orElseThrow();
+        notification.setRecipientHasBeenNotified(true);
+        repository.save(notification);
+    }
+
+    public Long countNewNotifications(String recipient) {
+        Notification notification = new Notification();
+        notification.setProfileId(recipient);
+        notification.setRecipientHasBeenNotified(false);
+        return repository.count(Example.of(notification));
     }
 }

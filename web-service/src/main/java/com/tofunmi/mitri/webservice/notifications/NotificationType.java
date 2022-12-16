@@ -1,9 +1,9 @@
-package com.tofunmi.mitri.webservice.interactions;
+package com.tofunmi.mitri.webservice.notifications;
 
 /**
  * Created By tofunmi on 15/12/2022
  */
-public enum InteractionType {
+public enum NotificationType {
     POST_REACTION,
     POST_REPLY,
     FOLLOW
