@@ -13,7 +13,7 @@ import java.time.Instant;
 @AllArgsConstructor
 public class NotificationViewModel {
     private String id;
-    private Instant happenedOn;
+    private Long happenedOnMilliseconds;
     private String actor;
     private String actorUsername;
     private NotificationType type;

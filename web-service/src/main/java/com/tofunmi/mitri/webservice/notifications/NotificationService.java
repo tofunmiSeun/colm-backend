@@ -6,6 +6,7 @@ import com.tofunmi.mitri.webservice.follows.ProfileUnfollowedEvent;
 import com.tofunmi.mitri.webservice.post.*;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
@@ -90,7 +91,7 @@ public class NotificationService {
     }
 
     public List<NotificationViewModel> getNotificationsForProfile(String profileId) {
-        List<Notification> notifications = repository.findAllByProfileId(profileId);
+        List<Notification> notifications = repository.findAllByProfileId(profileId, Sort.by("happenedOn").descending());
         List<String> actors = notifications.stream()
                 .map(Notification::getActor)
                 .collect(Collectors.toList());
@@ -98,7 +99,7 @@ public class NotificationService {
         Map<String, String> usernamesForActors = profileService.getUsernamesForIds(actors);
 
         return notifications.stream()
-                .map(e -> new NotificationViewModel(e.getId(), e.getHappenedOn(),
+                .map(e -> new NotificationViewModel(e.getId(), e.getHappenedOn().toEpochMilli(),
                         e.getActor(), usernamesForActors.getOrDefault(e.getActor(), "unknown-user"),
                         e.getType(), e.getRecipientHasBeenNotified(),
                         e.getPostId(), e.getReplyId(), e.getReaction()))
