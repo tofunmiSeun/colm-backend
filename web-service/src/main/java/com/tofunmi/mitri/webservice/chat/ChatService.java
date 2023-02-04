@@ -83,4 +83,9 @@ public class ChatService {
         chat.setLastActivityDate(now);
         chatRepository.save(chat);
     }
+
+    public List<ChatMessage> getMessagesInChat(String chatId) {
+        Assert.hasText(chatId, "Chat ID cannot be empty");
+        return chatMessageRepository.findAllByChatIdOrderBySentOnDesc(chatId);
+    }
 }

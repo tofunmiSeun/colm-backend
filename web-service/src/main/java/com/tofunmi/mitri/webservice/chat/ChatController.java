@@ -41,4 +41,9 @@ public class ChatController {
         profileService.validateProfileBelongsToUser(profileId, principal.getName());
         chatService.newMessage(id, profileId, text, files);
     }
+
+    @GetMapping(value = "{id}/message")
+    public List<ChatMessage> getMessagesInChat(@PathVariable String id) {
+        return chatService.getMessagesInChat(id);
+    }
 }
