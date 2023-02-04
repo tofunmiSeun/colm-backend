@@ -43,6 +43,12 @@ public class ProfileService {
                 .collect(Collectors.toList());
     }
 
+    public List<ProfileViewModel> searchUsername(String username) {
+        return repository.findByUsernameLikeIgnoreCase(username).stream()
+                .map(this::mapToViewModel)
+                .collect(Collectors.toList());
+    }
+
     public ProfileViewModel mapToViewModel(Profile profile) {
         ProfileViewModel overview = new ProfileViewModel();
         overview.setId(profile.getId());

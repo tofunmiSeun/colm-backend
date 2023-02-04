@@ -1,10 +1,12 @@
 package com.tofunmi.mitri.webservice.user;
 
 import com.tofunmi.mitri.usermanagement.profile.ProfileService;
+import com.tofunmi.mitri.usermanagement.profile.ProfileViewModel;
 import com.tofunmi.mitri.webservice.follows.FollowsService;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.List;
 
 /**
  * Created By tofunmi on 16/07/2022
@@ -16,7 +18,9 @@ public class ProfileController {
     private final ProfileOverviewService profileOverviewService;
     private final FollowsService followsService;
 
-    public ProfileController(ProfileService profileService, ProfileOverviewService profileOverviewService, FollowsService followsService) {
+    public ProfileController(ProfileService profileService,
+                             ProfileOverviewService profileOverviewService,
+                             FollowsService followsService) {
         this.profileService = profileService;
         this.profileOverviewService = profileOverviewService;
         this.followsService = followsService;
@@ -25,6 +29,11 @@ public class ProfileController {
     @GetMapping("available")
     public Boolean isUsernameAvailable(@RequestParam String username) {
         return profileService.isUsernameAvailable(username);
+    }
+
+    @PostMapping("search/username")
+    public List<ProfileViewModel> searchByUsername(@PathVariable String searchTerm) {
+        return profileService.searchUsername(searchTerm);
     }
 
     @PostMapping

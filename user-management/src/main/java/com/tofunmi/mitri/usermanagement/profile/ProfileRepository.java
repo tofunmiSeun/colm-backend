@@ -10,5 +10,6 @@ import java.util.List;
 
 public interface ProfileRepository extends MongoRepository<Profile, String> {
     List<Profile> findByUserId(String userId);
+    List<Profile> findByUsernameLikeIgnoreCase(String username);
     Boolean existsByUsername(String username);
 }
