@@ -49,6 +49,6 @@ public class ChatService {
     }
 
     public List<Chat> getForParticipant(String profileId) {
-        return chatRepository.findAllByParticipantsContainsSortByLastActivityDateDesc(profileId);
+        return chatRepository.findAllByParticipantsContainsOrderByLastActivityDateDesc(profileId);
     }
 }
