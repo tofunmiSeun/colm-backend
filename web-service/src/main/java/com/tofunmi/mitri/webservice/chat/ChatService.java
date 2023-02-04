@@ -1,6 +1,7 @@
 package com.tofunmi.mitri.webservice.chat;
 
 import com.tofunmi.mitri.usermanagement.profile.ProfileService;
+import com.tofunmi.mitri.usermanagement.profile.ProfileViewModel;
 import com.tofunmi.mitri.webservice.mediacontent.MediaContentService;
 import com.tofunmi.mitri.webservice.mediacontent.SavedMediaContent;
 import org.springframework.stereotype.Service;
@@ -10,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created By tofunmi on 31/01/2023
@@ -53,8 +55,44 @@ public class ChatService {
         return chatRepository.save(chat).getId();
     }
 
-    public List<Chat> getForParticipant(String profileId) {
-        return chatRepository.findAllByParticipantsContainsOrderByLastActivityDateDesc(profileId);
+    public List<ChatViewModel> getForParticipant(String profileId) {
+        Assert.hasText(profileId, "Profile ID cannot be empty");
+        final List<Chat> chatsForParticipant = chatRepository.findAllByParticipantsContainsOrderByLastActivityDateDesc(profileId);
+
+        final Set<String> uniqueProfileIds = new HashSet<>();
+        chatsForParticipant.parallelStream().forEach(e -> uniqueProfileIds.addAll(e.getParticipants()));
+
+        final List<ProfileViewModel> profileViewModels = profileService.getProfiles(uniqueProfileIds);
+
+        return chatsForParticipant.stream()
+                .map(chat -> toChatViewModel(chat, profileViewModels))
+                .collect(Collectors.toList());
+    }
+
+    private ChatViewModel toChatViewModel(Chat chat, List<ProfileViewModel> profileViewModels) {
+        ChatViewModel viewModel = new ChatViewModel();
+        viewModel.setId(chat.getId());
+
+        final Optional<ProfileViewModel> creatorProfileModel = profileViewModels.stream()
+                .filter(e -> Objects.equals(e.getId(), chat.getCreator()))
+                .findFirst();
+        creatorProfileModel.ifPresentOrElse(viewModel::setCreator, () -> {
+            throw new IllegalStateException("Could not find view model for chat creator");
+        });
+
+        viewModel.setCreatedOn(chat.getCreatedOn());
+
+        final Set<ProfileViewModel> participantsProfileModels = profileViewModels.stream()
+                .filter(e -> chat.getParticipants().contains(e.getId()))
+                .collect(Collectors.toSet());
+        if (participantsProfileModels.size() == chat.getParticipants().size()) {
+            viewModel.setParticipants(participantsProfileModels);
+        } else {
+            throw new IllegalStateException("Could not find view model for all chat participants");
+        }
+
+        viewModel.setLastActivityDate(chat.getLastActivityDate());
+        return viewModel;
     }
 
     public void newMessage(String chatId, String profileId, String text, MultipartFile[] mediaContents) {

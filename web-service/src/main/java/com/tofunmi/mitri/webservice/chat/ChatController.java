@@ -29,15 +29,15 @@ public class ChatController {
     }
 
     @GetMapping
-    public List<Chat> getForProfile(@RequestParam String profileId, Principal principal) {
+    public List<ChatViewModel> getForProfile(@RequestParam String profileId, Principal principal) {
         profileService.validateProfileBelongsToUser(profileId, principal.getName());
         return chatService.getForParticipant(profileId);
     }
 
     @PostMapping(value = "{id}/message", consumes = "multipart/form-data")
     public void createChatMessage(@PathVariable String id, @RequestParam String profileId, Principal principal,
-                           @RequestParam(value = "files", required = false) MultipartFile[] files,
-                           @RequestParam(value = "text", required = false) String text) {
+                                  @RequestParam(value = "files", required = false) MultipartFile[] files,
+                                  @RequestParam(value = "text", required = false) String text) {
         profileService.validateProfileBelongsToUser(profileId, principal.getName());
         chatService.newMessage(id, profileId, text, files);
     }
