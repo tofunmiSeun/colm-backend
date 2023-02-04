@@ -6,6 +6,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -20,7 +22,21 @@ public class MediaContentService {
         this.repository = repository;
     }
 
-    public SavedMediaContent save(MultipartFile file) throws IOException {
+    public List<SavedMediaContent> save(MultipartFile[] mediaContents) {
+        List<SavedMediaContent> savedMediaContents = new ArrayList<>();
+        if (mediaContents != null) {
+            for (MultipartFile fileContent : mediaContents) {
+                try {
+                    savedMediaContents.add(save(fileContent));
+                } catch (IOException e) {
+                    throw new RuntimeException("Failed to save media content", e.getCause());
+                }
+            }
+        }
+        return savedMediaContents;
+    }
+
+    private SavedMediaContent save(MultipartFile file) throws IOException {
         String contentType = file.getContentType();
         Optional<String> fileExtension = getFileExtension(file);
         validateFileMetadata(contentType);

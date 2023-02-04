@@ -2,6 +2,7 @@ package com.tofunmi.mitri.webservice.chat;
 
 import com.tofunmi.mitri.usermanagement.profile.ProfileService;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
 import java.util.List;
@@ -31,5 +32,13 @@ public class ChatController {
     public List<Chat> getForProfile(@RequestParam String profileId, Principal principal) {
         profileService.validateProfileBelongsToUser(profileId, principal.getName());
         return chatService.getForParticipant(profileId);
+    }
+
+    @PostMapping(value = "{id}/message", consumes = "multipart/form-data")
+    public void createChatMessage(@PathVariable String id, @RequestParam String profileId, Principal principal,
+                           @RequestParam(value = "files", required = false) MultipartFile[] files,
+                           @RequestParam(value = "text", required = false) String text) {
+        profileService.validateProfileBelongsToUser(profileId, principal.getName());
+        chatService.newMessage(id, profileId, text, files);
     }
 }

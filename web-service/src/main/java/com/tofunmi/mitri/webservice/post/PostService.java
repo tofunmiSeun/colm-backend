@@ -72,26 +72,12 @@ public class PostService {
         post.setCreatedOn(Instant.now());
         post.setLikesCount(0L);
 
-        List<SavedMediaContent> savedMediaContents = saveMediaContents(mediaContents);
+        List<SavedMediaContent> savedMediaContents = mediaContentService.save(mediaContents);
         if (savedMediaContents.size() > 0) {
-            post.setMediaContents(saveMediaContents(mediaContents));
+            post.setMediaContents(savedMediaContents);
         }
 
         return post;
-    }
-
-    private List<SavedMediaContent> saveMediaContents(MultipartFile[] mediaContents) {
-        List<SavedMediaContent> savedMediaContents = new ArrayList<>();
-        if (mediaContents != null) {
-            for (MultipartFile fileContent : mediaContents) {
-                try {
-                    savedMediaContents.add(mediaContentService.save(fileContent));
-                } catch (IOException e) {
-                    throw new RuntimeException("Failed to save media content", e.getCause());
-                }
-            }
-        }
-        return savedMediaContents;
     }
 
     public List<PostViewModel> getForFeed(String profileId) {

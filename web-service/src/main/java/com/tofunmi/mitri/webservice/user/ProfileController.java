@@ -31,9 +31,9 @@ public class ProfileController {
         return profileService.isUsernameAvailable(username);
     }
 
-    @PostMapping("search/username")
-    public List<ProfileViewModel> searchByUsername(@PathVariable String searchTerm) {
-        return profileService.searchUsername(searchTerm);
+    @GetMapping("search/username")
+    public List<ProfileViewModel> searchByUsername(@RequestParam String key) {
+        return profileService.searchUsername(key);
     }
 
     @PostMapping
