@@ -22,7 +22,7 @@ public class ChatController {
     }
 
     @PostMapping
-    public String createChat(@RequestParam String profileId, Principal principal,
+    public ChatViewModel createChat(@RequestParam String profileId, Principal principal,
                              @RequestParam(value = "invitees") String[] invitees) {
         profileService.validateProfileBelongsToUser(profileId, principal.getName());
         return chatService.newChat(profileId, invitees);

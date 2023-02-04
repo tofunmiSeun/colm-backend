@@ -33,7 +33,7 @@ public class ChatService {
         this.mediaContentService = mediaContentService;
     }
 
-    public String newChat(String requester, String[] invitees) {
+    public ChatViewModel newChat(String requester, String[] invitees) {
         final Set<String> participants = new HashSet<>();
 
         profileService.validateProfileExistence(requester);
@@ -52,7 +52,7 @@ public class ChatService {
         chat.setParticipants(participants);
         chat.setLastActivityDate(now);
 
-        return chatRepository.save(chat).getId();
+        return toChatViewModel(chatRepository.save(chat), profileService.getProfiles(participants));
     }
 
     public List<ChatViewModel> getForParticipant(String profileId) {
