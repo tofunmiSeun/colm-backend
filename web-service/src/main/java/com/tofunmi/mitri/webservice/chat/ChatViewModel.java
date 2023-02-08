@@ -17,4 +17,5 @@ public class ChatViewModel {
     private Instant createdOn;
     private Set<ProfileViewModel> participants;
     private Instant lastActivityDate;
+    private String lastMessageContent;
 }

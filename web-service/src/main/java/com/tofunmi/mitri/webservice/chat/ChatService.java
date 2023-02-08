@@ -64,9 +64,36 @@ public class ChatService {
 
         final List<ProfileViewModel> profileViewModels = profileService.getProfiles(uniqueProfileIds);
 
-        return chatsForParticipant.stream()
+        final List<String> chatIds = chatsForParticipant
+                .stream()
+                .map(Chat::getId)
+                .collect(Collectors.toList());
+        final Map<String, ChatMessage> latestMessageForChat = getLatestMessagesByChats(chatIds);
+
+        List<ChatViewModel> chatViewModels = chatsForParticipant.stream()
                 .map(chat -> toChatViewModel(chat, profileViewModels))
                 .collect(Collectors.toList());
+
+        for(ChatViewModel viewModel: chatViewModels) {
+            if (latestMessageForChat.containsKey(viewModel.getId())) {
+                viewModel.setLastMessageContent(latestMessageForChat.get(viewModel.getId()).getTextContent());
+            }
+        }
+
+        return chatViewModels;
+    }
+
+    private Map<String, ChatMessage> getLatestMessagesByChats(List<String> chatIds) {
+        final List<ChatMessage> chatMessages = chatMessageRepository.findAllByChatIdInOrderBySentOnDesc(chatIds);
+        Map<String, ChatMessage> latestMessageForChat = new HashMap<>();
+        for (ChatMessage message : chatMessages) {
+            final String chatId = message.getChatId();
+            final ChatMessage storedInMap = latestMessageForChat.get(chatId);
+            if (storedInMap == null || message.getSentOn().isAfter(storedInMap.getSentOn())) {
+                latestMessageForChat.put(chatId, message);
+            }
+        }
+        return latestMessageForChat;
     }
 
     private ChatViewModel toChatViewModel(Chat chat, List<ProfileViewModel> profileViewModels) {
