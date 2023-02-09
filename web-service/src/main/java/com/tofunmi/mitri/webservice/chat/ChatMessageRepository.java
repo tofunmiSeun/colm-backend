@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface ChatMessageRepository extends MongoRepository<ChatMessage, String> {
     List<ChatMessage> findAllByChatIdOrderBySentOnDesc(String chatId);
-    List<ChatMessage> findAllByChatIdInOrderBySentOnDesc(List<String> chatIds);
+    List<ChatMessage> findAllByIdIn(List<String> ids);
 }

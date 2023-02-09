@@ -64,36 +64,25 @@ public class ChatService {
 
         final List<ProfileViewModel> profileViewModels = profileService.getProfiles(uniqueProfileIds);
 
-        final List<String> chatIds = chatsForParticipant
+        final List<String> latestChatMessageIds = chatsForParticipant
                 .stream()
-                .map(Chat::getId)
+                .map(Chat::getLastActivityId)
+                .filter(StringUtils::hasText)
                 .collect(Collectors.toList());
-        final Map<String, ChatMessage> latestMessageForChat = getLatestMessagesByChats(chatIds);
+        final List<ChatMessage> mostRecentMessages = chatMessageRepository.findAllByIdIn(latestChatMessageIds);
 
         List<ChatViewModel> chatViewModels = chatsForParticipant.stream()
                 .map(chat -> toChatViewModel(chat, profileViewModels))
                 .collect(Collectors.toList());
 
-        for(ChatViewModel viewModel: chatViewModels) {
-            if (latestMessageForChat.containsKey(viewModel.getId())) {
-                viewModel.setLastMessageContent(latestMessageForChat.get(viewModel.getId()).getTextContent());
-            }
+        for (ChatViewModel viewModel : chatViewModels) {
+            mostRecentMessages.stream()
+                    .filter(e -> Objects.equals(e.getChatId(), viewModel.getId()))
+                    .findAny()
+                    .ifPresent(found -> viewModel.setLastMessageContent(found.getTextContent()));
         }
 
         return chatViewModels;
-    }
-
-    private Map<String, ChatMessage> getLatestMessagesByChats(List<String> chatIds) {
-        final List<ChatMessage> chatMessages = chatMessageRepository.findAllByChatIdInOrderBySentOnDesc(chatIds);
-        Map<String, ChatMessage> latestMessageForChat = new HashMap<>();
-        for (ChatMessage message : chatMessages) {
-            final String chatId = message.getChatId();
-            final ChatMessage storedInMap = latestMessageForChat.get(chatId);
-            if (storedInMap == null || message.getSentOn().isAfter(storedInMap.getSentOn())) {
-                latestMessageForChat.put(chatId, message);
-            }
-        }
-        return latestMessageForChat;
     }
 
     private ChatViewModel toChatViewModel(Chat chat, List<ProfileViewModel> profileViewModels) {
@@ -143,9 +132,10 @@ public class ChatService {
         }
 
         chatMessage.setSeenBy(Collections.singleton(profileId));
-        chatMessageRepository.save(chatMessage);
+        final String chatMessageId = chatMessageRepository.save(chatMessage).getId();
 
         chat.setLastActivityDate(now);
+        chat.setLastActivityId(chatMessageId);
         chatRepository.save(chat);
     }
 

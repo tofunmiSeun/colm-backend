@@ -21,4 +21,5 @@ public class Chat {
     private Instant createdOn;
     private Set<String> participants;
     private Instant lastActivityDate;
+    private String lastActivityId;
 }
