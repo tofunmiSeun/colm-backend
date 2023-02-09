@@ -1,5 +1,5 @@
 server:
-  port: 1650
+  port: ${PORT:1650}
 
 spring:
   servlet:
