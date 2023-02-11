@@ -109,16 +109,16 @@ public class NotificationService {
     private String getDescriptionTemplate(Notification e, Map<String, String> usernamesForActors) {
         String usernameForActor = usernamesForActors.getOrDefault(e.getActor(), "unknown-user");
         switch (e.getType()) {
-            case FOLLOW -> {
+            case FOLLOW: {
                 return String.format("%s followed you", usernameForActor);
             }
-            case POST_REPLY -> {
+            case POST_REPLY: {
                 return String.format("%s replied to your post", usernameForActor);
             }
-            case POST_REACTION -> {
+            case POST_REACTION: {
                 return String.format("%s reacted to your post", usernameForActor);
             }
-            default -> throw new IllegalArgumentException("Unknown interaction type " + e.getType());
+            default: throw new IllegalArgumentException("Unknown interaction type " + e.getType());
         }
     }
 
