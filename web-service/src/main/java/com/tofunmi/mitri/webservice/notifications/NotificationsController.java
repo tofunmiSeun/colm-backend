@@ -10,7 +10,7 @@ import java.util.List;
  * Created By tofunmi on 15/07/2022
  */
 @RestController
-@RequestMapping("notification")
+@RequestMapping("api/notification")
 public class NotificationsController {
     private final NotificationService notificationService;
     private final ProfileService profileService;

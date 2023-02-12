@@ -12,7 +12,7 @@ import java.util.List;
  * Created By tofunmi on 16/07/2022
  */
 @RestController
-@RequestMapping("profile")
+@RequestMapping("api/profile")
 public class ProfileController {
     private final ProfileService profileService;
     private final ProfileOverviewService profileOverviewService;

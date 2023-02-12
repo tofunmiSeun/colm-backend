@@ -10,7 +10,7 @@ import java.util.List;
  * Created By tofunmi on 15/07/2022
  */
 @RestController
-@RequestMapping("discover")
+@RequestMapping("api/discover")
 public class DiscoverController {
         private final DiscoverService discoverService;
 

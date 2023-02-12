@@ -11,7 +11,7 @@ import java.util.List;
  * Created By tofunmi on 15/07/2022
  */
 @RestController
-@RequestMapping("post")
+@RequestMapping("api/post")
 public class PostController {
     private final PostService postService;
     private final PostReactionService postReactionService;

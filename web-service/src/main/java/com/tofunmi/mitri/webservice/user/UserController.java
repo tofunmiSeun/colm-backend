@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 
 @RestController
-@RequestMapping("user")
+@RequestMapping("api/user")
 public class UserController {
     private final UserManagementService userManagementService;
     private final UserSessionService userSessionService;

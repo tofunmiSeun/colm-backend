@@ -11,7 +11,7 @@ import java.util.List;
  * Created By tofunmi on 04/02/2023
  */
 @RestController
-@RequestMapping("chat")
+@RequestMapping("api/chat")
 public class ChatController {
     private final ProfileService profileService;
     private final ChatService chatService;
