@@ -2,7 +2,6 @@ package com.tofunmi.mitri.webservice;
 
 import com.tofunmi.mitri.webservice.auth.CustomSessionTokenFilter;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -12,8 +11,11 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
+
+import java.util.Collections;
 
 /**
  * Created By tofunmi on 13/07/2022
@@ -24,7 +26,10 @@ public class WebSecurityConfig {
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().antMatchers("/user/setup/**")
+        return (web) -> web.ignoring().antMatchers("/*",
+                        "/static/**",
+                        "/gsi/**",
+                        "/api/user/setup/**")
                 .antMatchers(HttpMethod.OPTIONS, "/**");
     }
 
@@ -41,14 +46,22 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public FilterRegistrationBean<CorsFilter> corsFilter(@Value("${front-end-url}") String frontEndUrl) {
+    public CorsFilter corsFilter(@Value("${front-end-url}") String frontEndUrl) {
+        return new CorsFilter(configurationSource(frontEndUrl));
+    }
+
+    private CorsConfigurationSource configurationSource(String frontEndUrl) {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", corsConfiguration(frontEndUrl));
+        return source;
+    }
+
+    private CorsConfiguration corsConfiguration(String frontEndUrl) {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
         config.addAllowedOrigin(frontEndUrl);
-        config.addAllowedHeader("*");
-        config.addAllowedMethod("*");
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
-        return new FilterRegistrationBean<>(new CorsFilter(source));
+        config.setAllowedHeaders(Collections.singletonList("*"));
+        config.setAllowedMethods(Collections.singletonList("*"));
+        return config;
     }
 }
