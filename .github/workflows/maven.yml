@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - name: Set up Java version
+    - name: Set up Java version ${{ vars.JOB_NAME }}
       uses: actions/setup-java@v3
       with:
         java-version: '11'
