@@ -39,7 +39,7 @@ jobs:
           distribution: 'temurin'
           cache: maven
       - name: deploy to app-engine
-        run: mvn appengine deploy --file pom.xml
+        run: mvn -B appengine:deploy
         working-directory: web-service
         env:
           GCLOUD_PROJECT_ID: ${{ vars.GCLOUD_PROJECT_ID }}
