@@ -1,0 +1,34 @@
+name: Google app engine deploy
+on: workflow_dispatch
+
+jobs:
+  deploy-service:
+    name: deploy to google cloud
+    runs-on: ubuntu-latest
+    needs: [maven-build]
+    steps:
+      - uses: actions/checkout@v3
+
+      - id: auth
+        name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+
+      - name: Download web-service artifact
+        uses: actions/download-artifact@v2
+        with:
+              name: web-service-target-folder-${{ github.sha }}
+              path: web-service/target
+
+      - name: Deploy to App Engine
+        id: deploy
+        run: gcloud app deploy web-service/target/web-service-0.0.1-SNAPSHOT.jar --version=$GITHUB_REF_NAME
+        env:
+          DB_URI: ${{ secrets.SERVER_DB_URL }}
+          GOOGLE_IOS_CLIENT_ID: ${{ secrets.GOOGLE_IOS_CLIENT_ID }}
+          GOOGLE_WEB_CLIENT_ID: ${{ secrets.GOOGLE_WEB_CLIENT_ID }}
+          FRONT_END_URL: ${{ secrets.FRONT_END_URL }}
