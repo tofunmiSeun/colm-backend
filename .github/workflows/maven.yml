@@ -57,5 +57,5 @@ jobs:
       - name: Deploy to App Engine
         id: deploy
         run: |
-          ls web-service-target-folder
-          gcloud app deploy web-service-target-folder/web-service-0.0.1-SNAPSHOT.jar
+          ls web-service/target
+          gcloud app deploy web-service/target/web-service-0.0.1-SNAPSHOT.jar
