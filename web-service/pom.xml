@@ -41,6 +41,15 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>appengine-maven-plugin</artifactId>
+                <version>2.4.4</version>
+                <configuration>
+                    <projectId>${env.GCLOUD_PROJECT_ID}</projectId>
+                    <version>${env.GCLOUD_APP_VERSION}</version>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>
