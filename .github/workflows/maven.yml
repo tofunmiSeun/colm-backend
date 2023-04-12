@@ -25,3 +25,22 @@ jobs:
       run: |
         echo "Server port: ${{ vars.SERVER_PORT }}"
         mvn -B package --file pom.xml
+
+  deploy-service:
+    name: deploy to google cloud
+    runs-on: ubuntu-latest
+    needs: [maven-build]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Java version
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+          cache: maven
+      - name: deploy to app-engine
+        run: mvn appengine deploy --file pom.xml
+        working-directory: web-service
+        env:
+          GCLOUD_PROJECT_ID: ${{ vars.GCLOUD_PROJECT_ID }}
+          GCLOUD_APP_VERSION: mvp
