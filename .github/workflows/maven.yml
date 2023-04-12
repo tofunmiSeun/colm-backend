@@ -40,6 +40,9 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
+      - name: Maven Package
+        run: mvn -B package --file web-service/pom.xml
+
       - id: auth
         name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v1
