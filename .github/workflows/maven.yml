@@ -23,5 +23,5 @@ jobs:
         cache: maven
     - name: Maven Package
       run: |
-        echo "xxxxx repository variable : ${{ vars.GITHUB_REF }}"
+        echo "xxxxx repository variable : ${{ github.base_ref }}"
         mvn -B package --file pom.xml
