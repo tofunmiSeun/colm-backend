@@ -16,7 +16,7 @@ jobs:
           cache: maven
 
       - name: Maven Package
-        run: mvn -B package --file web-service/pom.xml
+        run: mvn -B package --file pom.xml
 
       - name: Upload web-service artifact
         uses: actions/upload-artifact@v2
