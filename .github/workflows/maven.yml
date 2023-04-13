@@ -15,5 +15,5 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Maven Package
+      - name: Maven Install
         run: mvn -B install --file pom.xml
