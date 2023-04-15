@@ -50,7 +50,7 @@ jobs:
         id: deploy
         run: |
           gcloud app deploy web-service/src/main/appengine/app.yaml
-          --version=$GITHUB_REF_NAME --instance-class F1
+          --version=$GITHUB_REF_NAME --instance-class F1 --runtime java11
           --set-env-vars DB_URI=${{ secrets.SERVER_DB_URL }},
           GOOGLE_IOS_CLIENT_ID=${{ secrets.GOOGLE_IOS_CLIENT_ID }},
           GOOGLE_WEB_CLIENT_ID=${{ secrets.GOOGLE_WEB_CLIENT_ID }},
