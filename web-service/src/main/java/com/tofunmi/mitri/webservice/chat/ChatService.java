@@ -96,7 +96,7 @@ public class ChatService {
             throw new IllegalStateException("Could not find view model for chat creator");
         });
 
-        viewModel.setCreatedOn(chat.getCreatedOn());
+        viewModel.setCreatedOnMilliseconds(chat.getCreatedOn().getEpochSecond());
 
         final Set<ProfileViewModel> participantsProfileModels = profileViewModels.stream()
                 .filter(e -> chat.getParticipants().contains(e.getId()))
@@ -107,7 +107,7 @@ public class ChatService {
             throw new IllegalStateException("Could not find view model for all chat participants");
         }
 
-        viewModel.setLastActivityDate(chat.getLastActivityDate());
+        viewModel.setLastActivityTimeMilliseconds(chat.getLastActivityDate().toEpochMilli());
         return viewModel;
     }
 
