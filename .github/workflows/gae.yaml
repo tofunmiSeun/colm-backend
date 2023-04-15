@@ -48,9 +48,10 @@ jobs:
 
       - name: Deploy to App Engine
         id: deploy
-        run: gcloud app deploy web-service/target/web-service-0.0.1-SNAPSHOT.jar --version=$GITHUB_REF_NAME
-        env:
-          DB_URI: ${{ secrets.SERVER_DB_URL }}
-          GOOGLE_IOS_CLIENT_ID: ${{ secrets.GOOGLE_IOS_CLIENT_ID }}
-          GOOGLE_WEB_CLIENT_ID: ${{ secrets.GOOGLE_WEB_CLIENT_ID }}
-          FRONT_END_URL: ${{ secrets.FRONT_END_URL }}
+        run: |
+          gcloud app deploy web-service/src/main/appengine/app.yaml
+          --version=$GITHUB_REF_NAME --instance-class F1
+          --set-env-vars DB_URI=${{ secrets.SERVER_DB_URL }},
+          GOOGLE_IOS_CLIENT_ID=${{ secrets.GOOGLE_IOS_CLIENT_ID }},
+          GOOGLE_WEB_CLIENT_ID=${{ secrets.GOOGLE_WEB_CLIENT_ID }},
+          FRONT_END_URL=${{ secrets.FRONT_END_URL }}
