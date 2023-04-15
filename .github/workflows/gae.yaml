@@ -51,4 +51,7 @@ jobs:
         run: >
           gcloud app deploy web-service/target/web-service-0.0.1-SNAPSHOT.jar
           --version=$GITHUB_REF_NAME
-          --instance-class=B2
+          --set-env-vars DB_URI=${{ secrets.SERVER_DB_URL }}
+          --set-env-vars GOOGLE_IOS_CLIENT_ID=${{ secrets.GOOGLE_IOS_CLIENT_ID }}
+          --set-env-vars GOOGLE_WEB_CLIENT_ID=${{ secrets.GOOGLE_WEB_CLIENT_ID }}
+          --set-env-vars FRONT_END_URL=${{ secrets.FRONT_END_URL }}
