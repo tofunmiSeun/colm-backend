@@ -46,6 +46,18 @@ public class ProfileController {
         return profileOverviewService.getOverview(id, profileId);
     }
 
+    @GetMapping("followers")
+    public List<ProfileViewModel> getFollowers(@RequestParam String profileId, Principal principal) {
+        profileService.validateProfileBelongsToUser(profileId, principal.getName());
+        return profileService.getProfiles(followsService.getFollowersProfiles(profileId));
+    }
+
+    @GetMapping("followed")
+    public List<ProfileViewModel> getFollowed(@RequestParam String profileId, Principal principal) {
+        profileService.validateProfileBelongsToUser(profileId, principal.getName());
+        return profileService.getProfiles(followsService.getFollowedProfiles(profileId));
+    }
+
     @PostMapping("{id}/follow")
     public void follow(@PathVariable String id, @RequestParam String profileId, Principal principal) {
         profileService.validateProfileBelongsToUser(profileId, principal.getName());
