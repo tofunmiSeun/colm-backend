@@ -143,4 +143,11 @@ public class ChatService {
         Assert.hasText(chatId, "Chat ID cannot be empty");
         return chatMessageRepository.findAllByChatIdOrderBySentOnDesc(chatId);
     }
+
+    public void leaveChat(String chatId, String profileId) {
+        final Chat chat = chatRepository.findById(chatId).orElseThrow(() -> new IllegalArgumentException("Could not find chat for id: " + chatId));
+        Assert.isTrue(chat.getParticipants().contains(profileId), "Profile is not a participant of this chat.");
+        chat.getParticipants().remove(profileId);
+        chatRepository.save(chat);
+    }
 }
