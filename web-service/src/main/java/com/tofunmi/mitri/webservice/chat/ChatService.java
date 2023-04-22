@@ -22,15 +22,18 @@ public class ChatService {
     private final ChatMessageRepository chatMessageRepository;
     private final ProfileService profileService;
     private final MediaContentService mediaContentService;
+    private final OnlineChatProfilesHandler onlineChatProfilesHandler;
 
     public ChatService(ChatRepository chatRepository,
                        ChatMessageRepository chatMessageRepository,
                        ProfileService profileService,
-                       MediaContentService mediaContentService) {
+                       MediaContentService mediaContentService,
+                       OnlineChatProfilesHandler onlineChatProfilesHandler) {
         this.chatRepository = chatRepository;
         this.chatMessageRepository = chatMessageRepository;
         this.profileService = profileService;
         this.mediaContentService = mediaContentService;
+        this.onlineChatProfilesHandler = onlineChatProfilesHandler;
     }
 
     public ChatViewModel newChat(String requester, String[] invitees) {
@@ -52,7 +55,9 @@ public class ChatService {
         chat.setParticipants(participants);
         chat.setLastActivityDate(now);
 
-        return toChatViewModel(chatRepository.save(chat), profileService.getProfiles(participants));
+        ChatViewModel viewModel = toChatViewModel(chatRepository.save(chat), profileService.getProfiles(participants));
+        notifyParticipants(chat, requester);
+        return viewModel;
     }
 
     public List<ChatViewModel> getForParticipant(String profileId) {
@@ -111,9 +116,9 @@ public class ChatService {
         return viewModel;
     }
 
-    public void newMessage(String chatId, String profileId, String text, MultipartFile[] mediaContents) {
+    public void newMessage(String chatId, String sender, String text, MultipartFile[] mediaContents) {
         final Chat chat = chatRepository.findById(chatId).orElseThrow(() -> new IllegalArgumentException("Could not find chat for id: " + chatId));
-        Assert.isTrue(chat.getParticipants().contains(profileId), "Profile needs to be a participant of this chat to send a message");
+        Assert.isTrue(chat.getParticipants().contains(sender), "Profile needs to be a participant of this chat to send a message");
 
         boolean messageContainsContent = (mediaContents != null && mediaContents.length > 0) ||
                 StringUtils.hasText(text);
@@ -122,7 +127,7 @@ public class ChatService {
         final Instant now = Instant.now();
         final ChatMessage chatMessage = new ChatMessage();
         chatMessage.setChatId(chatId);
-        chatMessage.setSender(profileId);
+        chatMessage.setSender(sender);
         chatMessage.setSentOn(now);
         chatMessage.setTextContent(text);
 
@@ -131,12 +136,14 @@ public class ChatService {
             chatMessage.setMediaContents(savedMediaContents);
         }
 
-        chatMessage.setSeenBy(Collections.singleton(profileId));
+        chatMessage.setSeenBy(Collections.singleton(sender));
         final String chatMessageId = chatMessageRepository.save(chatMessage).getId();
 
         chat.setLastActivityDate(now);
         chat.setLastActivityId(chatMessageId);
         chatRepository.save(chat);
+
+        notifyParticipants(chat, sender);
     }
 
     public List<ChatMessage> getMessagesInChat(String chatId) {
@@ -144,10 +151,19 @@ public class ChatService {
         return chatMessageRepository.findAllByChatIdOrderBySentOnDesc(chatId);
     }
 
-    public void leaveChat(String chatId, String profileId) {
+    public void leaveChat(String chatId, String leaver) {
         final Chat chat = chatRepository.findById(chatId).orElseThrow(() -> new IllegalArgumentException("Could not find chat for id: " + chatId));
-        Assert.isTrue(chat.getParticipants().contains(profileId), "Profile is not a participant of this chat.");
-        chat.getParticipants().remove(profileId);
+        Assert.isTrue(chat.getParticipants().contains(leaver), "Profile is not a participant of this chat.");
+        chat.getParticipants().remove(leaver);
         chatRepository.save(chat);
+        notifyParticipants(chat, leaver);
+    }
+
+    private void notifyParticipants(Chat chat, String actor) {
+        List<String> profilesToUpdate = chat.getParticipants()
+                .stream()
+                .filter(e -> !Objects.equals(e, actor))
+                .collect(Collectors.toList());
+        onlineChatProfilesHandler.notifyProfiles(profilesToUpdate);
     }
 }
