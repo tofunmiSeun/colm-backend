@@ -23,7 +23,7 @@ public class ChatController {
 
     @PostMapping
     public ChatViewModel createChat(@RequestParam String profileId, Principal principal,
-                             @RequestParam(value = "invitees") String[] invitees) {
+                                    @RequestParam(value = "invitees") String[] invitees) {
         profileService.validateProfileBelongsToUser(profileId, principal.getName());
         return chatService.newChat(profileId, invitees);
     }
@@ -32,6 +32,12 @@ public class ChatController {
     public List<ChatViewModel> getForProfile(@RequestParam String profileId, Principal principal) {
         profileService.validateProfileBelongsToUser(profileId, principal.getName());
         return chatService.getForParticipant(profileId);
+    }
+
+    @DeleteMapping(value = "{id}/leave")
+    public void leaveChat(@PathVariable String id, @RequestParam String profileId, Principal principal) {
+        profileService.validateProfileBelongsToUser(profileId, principal.getName());
+        chatService.leaveChat(id, profileId);
     }
 
     @PostMapping(value = "{id}/message", consumes = "multipart/form-data")

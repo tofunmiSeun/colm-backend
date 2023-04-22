@@ -26,6 +26,10 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -46,7 +50,9 @@
                 <artifactId>appengine-maven-plugin</artifactId>
                 <version>2.4.4</version>
                 <configuration>
+                    <!--suppress UnresolvedMavenProperty -->
                     <projectId>${env.GCLOUD_PROJECT_ID}</projectId>
+                    <!--suppress UnresolvedMavenProperty -->
                     <version>${env.GCLOUD_APP_VERSION}</version>
                 </configuration>
             </plugin>

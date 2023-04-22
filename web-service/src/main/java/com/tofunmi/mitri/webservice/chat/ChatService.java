@@ -96,7 +96,7 @@ public class ChatService {
             throw new IllegalStateException("Could not find view model for chat creator");
         });
 
-        viewModel.setCreatedOn(chat.getCreatedOn());
+        viewModel.setCreatedOnMilliseconds(chat.getCreatedOn().getEpochSecond());
 
         final Set<ProfileViewModel> participantsProfileModels = profileViewModels.stream()
                 .filter(e -> chat.getParticipants().contains(e.getId()))
@@ -107,7 +107,7 @@ public class ChatService {
             throw new IllegalStateException("Could not find view model for all chat participants");
         }
 
-        viewModel.setLastActivityDate(chat.getLastActivityDate());
+        viewModel.setLastActivityTimeMilliseconds(chat.getLastActivityDate().toEpochMilli());
         return viewModel;
     }
 
@@ -142,5 +142,12 @@ public class ChatService {
     public List<ChatMessage> getMessagesInChat(String chatId) {
         Assert.hasText(chatId, "Chat ID cannot be empty");
         return chatMessageRepository.findAllByChatIdOrderBySentOnDesc(chatId);
+    }
+
+    public void leaveChat(String chatId, String profileId) {
+        final Chat chat = chatRepository.findById(chatId).orElseThrow(() -> new IllegalArgumentException("Could not find chat for id: " + chatId));
+        Assert.isTrue(chat.getParticipants().contains(profileId), "Profile is not a participant of this chat.");
+        chat.getParticipants().remove(profileId);
+        chatRepository.save(chat);
     }
 }
