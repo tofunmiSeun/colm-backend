@@ -78,4 +78,10 @@ public class PostController {
         profileService.validateProfileBelongsToUser(loggedInUserProfileId, principal.getName());
         return postService.findForProfile(profileId, loggedInUserProfileId);
     }
+
+    @GetMapping("search")
+    public List<PostViewModel> searchContent(@RequestParam String searchKey, @RequestParam("profileId") String loggedInUserProfileId, Principal principal) {
+        profileService.validateProfileBelongsToUser(loggedInUserProfileId, principal.getName());
+        return postService.searchContent(searchKey, loggedInUserProfileId);
+    }
 }

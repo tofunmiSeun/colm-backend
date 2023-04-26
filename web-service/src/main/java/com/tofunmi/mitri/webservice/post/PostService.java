@@ -12,7 +12,6 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -61,7 +60,7 @@ public class PostService {
     }
 
     private Post newPost(String content, String profileId, MultipartFile[] mediaContents) {
-       profileService.validateProfileExistence(profileId);
+        profileService.validateProfileExistence(profileId);
         boolean postContainsContent = (mediaContents != null && mediaContents.length > 0) ||
                 StringUtils.hasText(content);
         Assert.isTrue(postContainsContent, "At least some text or one media content is required");
@@ -144,5 +143,13 @@ public class PostService {
 
     public Long countForProfile(String profileId) {
         return repository.countAllByAuthor(profileId);
+    }
+
+    public List<PostViewModel> searchContent(String searchKey, String loggedInUserProfileId) {
+        List<Post> searchResult = repository.findAllByContentLikeIgnoreCase(searchKey, sort).stream()
+                .filter(e -> e.getDeletedAt() == null)
+                .collect(Collectors.toList());
+
+        return hydratePosts(searchResult, loggedInUserProfileId);
     }
 }

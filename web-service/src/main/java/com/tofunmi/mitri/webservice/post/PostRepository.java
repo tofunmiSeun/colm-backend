@@ -14,4 +14,6 @@ public interface PostRepository extends MongoRepository<Post, String> {
     List<Post> findAllByAuthor(String author, Sort sort);
 
     Long countAllByAuthor(String author);
+
+    List<Post> findAllByContentLikeIgnoreCase(String searchKey, Sort sort);
 }
