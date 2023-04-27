@@ -148,6 +148,7 @@ public class PostService {
     public List<PostViewModel> searchContent(String searchKey, String loggedInUserProfileId) {
         List<Post> searchResult = repository.findAllByContentLikeIgnoreCase(searchKey, sort).stream()
                 .filter(e -> e.getDeletedAt() == null)
+                .filter(e -> !StringUtils.hasText(e.getParentPostId()))
                 .collect(Collectors.toList());
 
         return hydratePosts(searchResult, loggedInUserProfileId);
