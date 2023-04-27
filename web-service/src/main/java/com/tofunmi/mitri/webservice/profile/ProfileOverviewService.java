@@ -1,4 +1,4 @@
-package com.tofunmi.mitri.webservice.user;
+package com.tofunmi.mitri.webservice.profile;
 
 import com.tofunmi.mitri.usermanagement.profile.ProfileService;
 import com.tofunmi.mitri.usermanagement.profile.ProfileViewModel;

@@ -1,4 +1,4 @@
-package com.tofunmi.mitri.webservice.user;
+package com.tofunmi.mitri.webservice.profile;
 
 import lombok.Data;
 
