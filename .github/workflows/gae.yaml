@@ -18,11 +18,11 @@ jobs:
       - name: Maven Package
         run: mvn -B package --file pom.xml
 
-      - name: Upload web-service artifact
+      - name: Upload api artifact
         uses: actions/upload-artifact@v2
         with:
-          name: web-service-target-folder
-          path: web-service/target
+          name: api-target-folder
+          path: api/target
 
   appengine-deploy:
     name: deploy to google cloud
@@ -40,15 +40,15 @@ jobs:
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
 
-      - name: Download web-service artifact
+      - name: Download api artifact
         uses: actions/download-artifact@v2
         with:
-          name: web-service-target-folder
-          path: web-service/target
+          name: api-target-folder
+          path: api/target
 
       - name: Deploy to App Engine
         id: deploy
-        run: gcloud app deploy web-service/target/web-service-0.0.1-SNAPSHOT.jar --version=$GITHUB_REF_NAME
+        run: gcloud app deploy api/target/api-0.0.1-SNAPSHOT.jar --version=$GITHUB_REF_NAME
         env:
           DB_URI: ${{ secrets.SERVER_DB_URL }}
           GOOGLE_IOS_CLIENT_ID: ${{ secrets.GOOGLE_IOS_CLIENT_ID }}
