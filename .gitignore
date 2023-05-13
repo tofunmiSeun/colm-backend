@@ -35,3 +35,4 @@ build/
 
 ### Google cloud app engine deployment files
 /api/src/main/appengine/
+/api/.gcloudignore
