@@ -1,4 +1,4 @@
-package com.tofunmi.mitri.usermanagement.jwt;
+package com.tofunmi.colm.jwt;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;

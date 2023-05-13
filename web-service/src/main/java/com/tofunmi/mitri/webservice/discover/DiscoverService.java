@@ -1,8 +1,8 @@
 package com.tofunmi.mitri.webservice.discover;
 
-import com.tofunmi.mitri.usermanagement.profile.ProfileRepository;
-import com.tofunmi.mitri.usermanagement.profile.ProfileService;
-import com.tofunmi.mitri.usermanagement.profile.ProfileViewModel;
+import com.tofunmi.colm.profile.ProfileRepository;
+import com.tofunmi.colm.profile.ProfileService;
+import com.tofunmi.colm.profile.ProfileViewModel;
 import com.tofunmi.mitri.webservice.follows.FollowsService;
 import com.tofunmi.mitri.webservice.post.Post;
 import com.tofunmi.mitri.webservice.post.PostRepository;

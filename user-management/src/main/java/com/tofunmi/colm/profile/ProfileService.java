@@ -1,4 +1,4 @@
-package com.tofunmi.mitri.usermanagement.profile;
+package com.tofunmi.colm.profile;
 
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;

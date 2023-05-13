@@ -1,11 +1,11 @@
-package com.tofunmi.mitri.usermanagement;
+package com.tofunmi.colm;
 
-import com.tofunmi.mitri.usermanagement.jwt.GoogleJwtValidator;
-import com.tofunmi.mitri.usermanagement.jwt.ValidatedJwtTokenDetails;
-import com.tofunmi.mitri.usermanagement.profile.ProfileViewModel;
-import com.tofunmi.mitri.usermanagement.profile.ProfileService;
-import com.tofunmi.mitri.usermanagement.user.User;
-import com.tofunmi.mitri.usermanagement.user.UserRepository;
+import com.tofunmi.colm.jwt.GoogleJwtValidator;
+import com.tofunmi.colm.jwt.ValidatedJwtTokenDetails;
+import com.tofunmi.colm.profile.ProfileViewModel;
+import com.tofunmi.colm.profile.ProfileService;
+import com.tofunmi.colm.user.User;
+import com.tofunmi.colm.user.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

@@ -1,7 +1,7 @@
 package com.tofunmi.mitri.webservice.post;
 
-import com.tofunmi.mitri.usermanagement.profile.ProfileViewModel;
-import com.tofunmi.mitri.usermanagement.profile.ProfileService;
+import com.tofunmi.colm.profile.ProfileViewModel;
+import com.tofunmi.colm.profile.ProfileService;
 import com.tofunmi.mitri.webservice.follows.FollowsService;
 import com.tofunmi.mitri.webservice.mediacontent.MediaContentService;
 import com.tofunmi.mitri.webservice.mediacontent.SavedMediaContent;

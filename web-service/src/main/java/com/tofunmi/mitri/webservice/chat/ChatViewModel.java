@@ -1,6 +1,6 @@
 package com.tofunmi.mitri.webservice.chat;
 
-import com.tofunmi.mitri.usermanagement.profile.ProfileViewModel;
+import com.tofunmi.colm.profile.ProfileViewModel;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 

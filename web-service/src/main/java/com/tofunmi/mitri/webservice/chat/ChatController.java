@@ -1,6 +1,6 @@
 package com.tofunmi.mitri.webservice.chat;
 
-import com.tofunmi.mitri.usermanagement.profile.ProfileService;
+import com.tofunmi.colm.profile.ProfileService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 

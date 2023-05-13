@@ -1,8 +1,8 @@
 package com.tofunmi.mitri.webservice.user;
 
-import com.tofunmi.mitri.usermanagement.UserManagementService;
-import com.tofunmi.mitri.usermanagement.sessiontoken.UserSessionService;
-import com.tofunmi.mitri.usermanagement.UserSetupResponse;
+import com.tofunmi.colm.UserManagementService;
+import com.tofunmi.colm.sessiontoken.UserSessionService;
+import com.tofunmi.colm.UserSetupResponse;
 import com.tofunmi.mitri.webservice.auth.CookieManagementService;
 import org.springframework.web.bind.annotation.*;
 

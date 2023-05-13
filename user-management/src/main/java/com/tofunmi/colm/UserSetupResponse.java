@@ -1,6 +1,6 @@
-package com.tofunmi.mitri.usermanagement;
+package com.tofunmi.colm;
 
-import com.tofunmi.mitri.usermanagement.profile.ProfileViewModel;
+import com.tofunmi.colm.profile.ProfileViewModel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

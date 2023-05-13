@@ -1,6 +1,6 @@
 package com.tofunmi.mitri.webservice.follows;
 
-import com.tofunmi.mitri.usermanagement.profile.ProfileService;
+import com.tofunmi.colm.profile.ProfileService;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;

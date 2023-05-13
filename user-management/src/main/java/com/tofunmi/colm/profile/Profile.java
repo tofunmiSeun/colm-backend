@@ -1,4 +1,4 @@
-package com.tofunmi.mitri.usermanagement.sessiontoken;
+package com.tofunmi.colm.profile;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,16 +9,19 @@ import org.springframework.data.mongodb.core.mapping.Document;
  * Created By tofunmi on 12/07/2022
  */
 
-@Document("session_tokens")
 @Data
+@Document("profiles")
 @NoArgsConstructor
-public class SessionToken {
+public class Profile {
     @Id
-    private String token;
+    private String id;
     private String userId;
+    private String username;
+    private String name;
+    private String description;
 
-    SessionToken(String token, String userId) {
-        this.token = token;
+    Profile(String userId, String username) {
         this.userId = userId;
+        this.username = username;
     }
 }

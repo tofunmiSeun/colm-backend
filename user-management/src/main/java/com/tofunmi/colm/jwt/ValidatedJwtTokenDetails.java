@@ -1,4 +1,4 @@
-package com.tofunmi.mitri.usermanagement.jwt;
+package com.tofunmi.colm.jwt;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,6 +1,6 @@
 package com.tofunmi.mitri.webservice.notifications;
 
-import com.tofunmi.mitri.usermanagement.profile.ProfileService;
+import com.tofunmi.colm.profile.ProfileService;
 import com.tofunmi.mitri.webservice.follows.ProfileFollowedEvent;
 import com.tofunmi.mitri.webservice.follows.ProfileUnfollowedEvent;
 import com.tofunmi.mitri.webservice.post.*;

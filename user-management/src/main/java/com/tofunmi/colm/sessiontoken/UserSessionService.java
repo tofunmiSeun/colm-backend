@@ -1,4 +1,4 @@
-package com.tofunmi.mitri.usermanagement.sessiontoken;
+package com.tofunmi.colm.sessiontoken;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.stereotype.Component;

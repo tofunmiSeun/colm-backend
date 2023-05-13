@@ -1,4 +1,4 @@
-package com.tofunmi.mitri.usermanagement.user;
+package com.tofunmi.colm.user;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

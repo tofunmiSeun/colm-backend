@@ -1,6 +1,6 @@
 package com.tofunmi.mitri.webservice.discover;
 
-import com.tofunmi.mitri.usermanagement.profile.ProfileViewModel;
+import com.tofunmi.colm.profile.ProfileViewModel;
 import com.tofunmi.mitri.webservice.post.PostViewModel;
 import org.springframework.web.bind.annotation.*;
 
