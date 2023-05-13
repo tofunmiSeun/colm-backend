@@ -19,7 +19,7 @@
 	<artifactId>mitri-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>mitri-service</name>
-	<description>Java based backend for mitri application</description>
+	<description>Java based backend for colm application</description>
 
 	<properties>
 		<java.version>11</java.version>

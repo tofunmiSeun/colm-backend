@@ -7,7 +7,6 @@ import com.tofunmi.colm.webservice.post.PostLikeRemovedEvent;
 import com.tofunmi.colm.webservice.post.PostLikedEvent;
 import com.tofunmi.colm.webservice.post.PostReplyPublishedEvent;
 import com.tofunmi.colm.webservice.post.Reaction;
-import com.tofunmi.mitri.webservice.post.*;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Sort;

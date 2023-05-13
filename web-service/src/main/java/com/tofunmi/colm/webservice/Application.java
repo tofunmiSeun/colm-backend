@@ -5,8 +5,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 
-@SpringBootApplication(scanBasePackages = {"com.tofunmi.mitri"})
-@EnableMongoRepositories(basePackages = {"com.tofunmi.mitri"})
+@SpringBootApplication(scanBasePackages = {"com.tofunmi.colm"})
+@EnableMongoRepositories(basePackages = {"com.tofunmi.colm"})
 @EnableWebSocket
 public class Application {
 
