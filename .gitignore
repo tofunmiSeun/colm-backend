@@ -34,4 +34,4 @@ build/
 .vscode/
 
 ### Google cloud app engine deployment files
-/web-service/src/main/appengine/
+/api/src/main/appengine/
