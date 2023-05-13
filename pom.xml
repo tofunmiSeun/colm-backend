@@ -5,7 +5,7 @@
 	<packaging>pom</packaging>
 	<modules>
 		<module>user-management</module>
-		<module>web-service</module>
+		<module>api</module>
 	</modules>
 
 	<parent>
@@ -15,10 +15,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
-	<groupId>com.tofunmi.mitri</groupId>
-	<artifactId>mitri-service</artifactId>
+	<artifactId>colm-backend</artifactId>
+	<groupId>com.tofunmi.colm</groupId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>mitri-service</name>
+	<name>colm-backend</name>
 	<description>Java based backend for colm application</description>
 
 	<properties>
